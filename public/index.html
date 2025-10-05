@@ -36,15 +36,42 @@
             background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
+            padding: 0.5rem;
         }
         
         .form-card {
             max-width: 1000px;
-            width: 95%;
+            width: 100%;
             min-height: 650px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile-first responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.25rem;
+            }
+            
+            .form-card {
+                width: 100%;
+                min-height: auto;
+                max-width: 100%;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                border-radius: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 0.125rem;
+            }
+            
+            .form-card {
+                border-radius: 12px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            }
         }
         
         /* Modern Input Styles */
@@ -54,6 +81,7 @@
             background: linear-gradient(145deg, #ffffff, #f8fafc);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             position: relative;
+            font-size: 16px; /* Prevents zoom on iOS */
         }
         
         .form-input:focus, .form-select:focus {
@@ -68,6 +96,26 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
         }
         
+        /* Mobile responsive inputs */
+        @media (max-width: 768px) {
+            .form-input, .form-select {
+                padding: 14px 16px;
+                font-size: 16px;
+                border-radius: 8px;
+            }
+            
+            .form-input:focus, .form-select:focus {
+                transform: none; /* Disable transform on mobile for performance */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .form-input, .form-select {
+                padding: 12px 14px;
+                font-size: 16px;
+            }
+        }
+        
         /* Modern Toggle Buttons */
         .toggle-btn {
             flex: 1;
@@ -78,11 +126,60 @@
             font-size: 14px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
-            color: #64748b;
             border: 2px solid #e2e8f0;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            color: #64748b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toggle-btn:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+            transform: translateY(-1px);
+        }
+        
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #e63946, #dc2626);
+            border-color: #e63946;
+            color: white;
+            box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Mobile responsive toggle buttons */
+        @media (max-width: 768px) {
+            .toggle-btn {
+                padding: 12px 16px;
+                font-size: 13px;
+                min-height: 55px;
+                border-radius: 8px;
+            }
+            
+            .toggle-btn:hover {
+                transform: none;
+            }
+            
+            .toggle-btn.active {
+                transform: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .toggle-btn {
+                padding: 10px 12px;
+                font-size: 12px;
+                min-height: 50px;
+                border-radius: 6px;
+            }
+            
+            .toggle-btn i {
+                font-size: 14px !important;
+            }
         }
         
         .toggle-btn::before {
@@ -185,20 +282,103 @@
             background: linear-gradient(145deg, #e2e8f0, #cbd5e1);
         }
         
+        /* Mobile responsive progress dots */
+        @media (max-width: 768px) {
+            .progress-dot {
+                width: 10px;
+                height: 10px;
+                margin: 0 4px;
+            }
+            
+            .progress-dot.active {
+                transform: scale(1.2);
+            }
+            
+            .progress-dot.completed {
+                transform: scale(1.05);
+            }
+            
+            #progress-dots {
+                margin-top: 1rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .progress-dot {
+                width: 8px;
+                height: 8px;
+                margin: 0 3px;
+            }
+            
+            .progress-dot.active {
+                transform: scale(1.15);
+            }
+            
+            .progress-dot.completed {
+                transform: scale(1.0);
+            }
+            
+            #progress-dots {
+                margin-top: 0.75rem !important;
+            }
+        }
+        
         /* Modern Button Styles */
         .modern-btn {
             background: linear-gradient(135deg, #e63946, #dc2626);
             border: none;
             border-radius: 12px;
             padding: 16px 32px;
-            font-weight: 600;
-            font-size: 16px;
             color: white;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 25px rgba(230, 57, 70, 0.25);
+            box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
             position: relative;
             overflow: hidden;
+            min-height: 52px;
+        }
+        
+        .modern-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+        }
+        
+        .modern-btn:active {
+            transform: translateY(0);
+        }
+        
+        .modern-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Mobile responsive button styles */
+        @media (max-width: 768px) {
+            .modern-btn {
+                padding: 14px 28px;
+                font-size: 15px;
+                border-radius: 10px;
+                min-height: 48px;
+            }
+            
+            .modern-btn:hover {
+                transform: none; /* Disable hover effects on mobile */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .modern-btn {
+                padding: 12px 24px;
+                font-size: 14px;
+                border-radius: 8px;
+                min-height: 44px;
+                letter-spacing: 0.5px;
+            }
         }
         
         .modern-btn:hover {
@@ -263,6 +443,37 @@
             font-weight: 600;
         }
         
+        /* Mobile responsive floating labels */
+        @media (max-width: 768px) {
+            .floating-label {
+                font-size: 0.875rem;
+                left: 14px;
+                top: 16px;
+            }
+            
+            .form-input:focus + .floating-label,
+            .form-input:not(:placeholder-shown) + .floating-label {
+                top: -6px;
+                left: 10px;
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .floating-label {
+                font-size: 0.875rem;
+                left: 12px;
+                top: 14px;
+            }
+            
+            .form-input:focus + .floating-label,
+            .form-input:not(:placeholder-shown) + .floating-label {
+                top: -5px;
+                left: 8px;
+                font-size: 10px;
+            }
+        }
+        
         /* Custom Select Styling */
         .form-select {
             appearance: none;
@@ -320,12 +531,32 @@
             background: linear-gradient(145deg, #ffffff, #f8fafc);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px; /* Prevents zoom on mobile */
         }
         
         .StripeElement:focus-within {
             border-color: #e63946;
             box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
             transform: translateY(-1px);
+        }
+        
+        @media (max-width: 768px) {
+            .StripeElement {
+                padding: 12px;
+                border-radius: 8px;
+                font-size: 16px;
+            }
+            
+            .StripeElement:focus-within {
+                transform: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .StripeElement {
+                padding: 10px;
+                border-radius: 6px;
+            }
         }
         
         /* Payment section styling */
@@ -376,12 +607,14 @@
         @media (max-width: 768px) {
             .payment-modal {
                 max-height: 95vh;
-                margin: 10px;
-                max-width: calc(100vw - 20px);
+                margin: 5px;
+                max-width: calc(100vw - 10px);
+                border-radius: 12px;
             }
             
             .payment-modal .grid {
                 grid-template-columns: 1fr !important;
+                gap: 0 !important;
             }
             
             .payment-modal .p-8 {
@@ -390,6 +623,33 @@
             
             .payment-modal h2 {
                 font-size: 1.25rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .payment-modal .space-y-6 > * + * {
+                margin-top: 1rem !important;
+            }
+            
+            .payment-modal .space-y-4 > * + * {
+                margin-top: 0.75rem !important;
+            }
+            
+            /* Make payment form smaller on mobile */
+            .payment-modal .bg-blue-50 {
+                padding: 0.75rem !important;
+                margin-top: 1rem !important;
+            }
+            
+            .payment-modal .text-2xl {
+                font-size: 1.125rem !important;
+            }
+            
+            .payment-modal .text-lg {
+                font-size: 1rem !important;
+            }
+            
+            .payment-modal .text-sm {
+                font-size: 0.875rem !important;
             }
             
             /* Enable zoom and prevent zoom disable */
@@ -400,13 +660,44 @@
         
         @media (max-width: 480px) {
             .payment-modal {
-                margin: 5px;
-                max-width: calc(100vw - 10px);
+                margin: 2px;
+                max-width: calc(100vw - 4px);
                 border-radius: 8px;
+                max-height: 98vh;
+            }
+            
+            .payment-modal .p-8 {
+                padding: 0.75rem !important;
+            }
+            
+            .payment-modal h2 {
+                font-size: 1.125rem !important;
+                margin-bottom: 0.75rem !important;
+            }
+            
+            .payment-modal .space-y-6 > * + * {
+                margin-top: 0.75rem !important;
             }
             
             .payment-modal .space-y-4 > * + * {
+                margin-top: 0.5rem !important;
+            }
+            
+            .payment-modal .bg-blue-50 {
+                padding: 0.5rem !important;
                 margin-top: 0.75rem !important;
+            }
+            
+            .payment-modal .mt-8 {
+                margin-top: 0.75rem !important;
+            }
+            
+            .payment-modal .mt-6 {
+                margin-top: 0.5rem !important;
+            }
+            
+            .payment-modal .mt-4 {
+                margin-top: 0.5rem !important;
             }
         }
         
@@ -440,9 +731,168 @@
             color: #6b7280;
             font-weight: 500;
         }
+        
+        /* Main form responsive layout */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.25rem;
+                justify-content: flex-start;
+                min-height: 100vh;
+            }
+            
+            .mb-6 {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .mb-6 img {
+                height: 60px !important;
+            }
+            
+            /* Make form single column on mobile */
+            #visa-form-card {
+                flex-direction: column !important;
+                min-height: auto;
+            }
+            
+            .left-panel {
+                width: 100% !important;
+                padding: 1rem !important;
+                border-right: none !important;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            
+            .left-panel h2 {
+                font-size: 1.5rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .left-panel p {
+                font-size: 0.875rem !important;
+                margin-bottom: 1rem !important;
+                max-width: none !important;
+            }
+            
+            .left-panel .w-40 {
+                width: 80px !important;
+                height: 80px !important;
+            }
+            
+            /* Right form column */
+            .form-card form {
+                width: 100% !important;
+                padding: 1rem !important;
+            }
+            
+            /* Form content spacing */
+            .space-y-8 > * + * {
+                margin-top: 1rem !important;
+            }
+            
+            /* Grid layouts for mobile */
+            .grid-cols-3 {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+            
+            .grid-cols-2 {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+            
+            /* Button sizing */
+            .modern-btn {
+                padding: 12px 24px !important;
+                font-size: 0.875rem !important;
+            }
+            
+            /* Typography adjustments */
+            h3 {
+                font-size: 1.125rem !important;
+                margin-bottom: 0.75rem !important;
+            }
+            
+            /* Navigation spacing */
+            .mt-8 {
+                margin-top: 1rem !important;
+            }
+            
+            .pt-6 {
+                padding-top: 0.75rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 0.125rem;
+            }
+            
+            .mb-6 img {
+                height: 50px !important;
+            }
+            
+            .left-panel {
+                padding: 0.75rem !important;
+            }
+            
+            .left-panel h2 {
+                font-size: 1.25rem !important;
+            }
+            
+            .left-panel .w-40 {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            
+            .form-card form {
+                padding: 0.75rem !important;
+            }
+            
+            /* Tighter spacing on small screens */
+            .space-y-8 > * + * {
+                margin-top: 0.75rem !important;
+            }
+            
+            .grid-cols-3,
+            .grid-cols-2 {
+                gap: 0.5rem !important;
+            }
+            
+            /* Smaller buttons */
+            .modern-btn {
+                padding: 10px 20px !important;
+                font-size: 0.875rem !important;
+            }
+            
+            h3 {
+                font-size: 1rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            /* Tighter navigation */
+            .mt-8 {
+                margin-top: 0.75rem !important;
+            }
+            
+            .pt-6 {
+                padding-top: 0.5rem !important;
+            }
+            
+            /* Touch-friendly targets */
+            .toggle-btn {
+                min-height: 48px !important; /* Apple's recommended minimum touch target */
+            }
+            
+            .form-input, .form-select {
+                min-height: 48px !important;
+            }
+            
+            .modern-btn {
+                min-height: 48px !important;
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-1 md:p-4">
 
     <!-- Logo Section -->
     <div class="mb-6">
@@ -496,7 +946,7 @@
     </div>
 
     <!-- Progress Dots Indicator -->
-    <div id="progress-dots" class="flex justify-center items-center mt-8">
+    <div id="progress-dots" class="flex justify-center items-center mt-4 md:mt-8">
         <!-- Dots will be generated here by JavaScript -->
     </div>
 
