@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Payment Test</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Stripe.js V3 -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        /* Custom styling for the Stripe Element container */
+        .StripeElement {
+            padding: 12px;
+            border: 1px solid #e5e7eb; /* gray-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: white;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4" style="font-family: 'Inter', sans-serif;">
+
+    <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Test Payment</h1>
+        <p class="text-gray-500 mb-8">Securely process a one-time payment of $20.00.</p>
+
+        <!-- Payment Form -->
+        <form id="payment-form" class="space-y-6">
+            <div id="payment-element" class="StripeElement">
+                <!-- Stripe Payment Element will be inserted here -->
+            </div>
+
+            <button 
+                id="submit-button"
+                type="submit" 
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-150 ease-in-out shadow-md disabled:opacity-50"
+                disabled
+            >
+                <span id="button-text">Pay Now ($20.00)</span>
+            </button>
+
+            <!-- Display payment result message -->
+            <div id="payment-message" class="mt-4 text-center text-sm font-medium"></div>
+        </form>
+
+        <p class="mt-8 text-center text-xs text-gray-400">Powered by Stripe & Payment Intents API.</p>
+    </div>
+
+    <script>
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51QDrhGCix17DoyQvjF7EDYkYxFEHHTTMlu2IAvBotu9PJdiwGg9WdGo4hdcpE1SjAe6BlmhRMLzMU0rKrYU8xKeK00BA8vEIM7'; 
+
+        // 1. Initialize Stripe
+        let stripe;
+        try {
+            stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        } catch (e) {
+            document.getElementById('payment-message').textContent = 'Error: Could not initialize Stripe. Check your Publishable Key.';
+            console.error(e);
+        }
+        
+        // References to DOM elements
+        const form = document.getElementById('payment-form');
+        const paymentMessage = document.getElementById('payment-message');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        
+        let elements; // Variable to hold Stripe Elements instance
+
+        // 2. Fetch Client Secret and Initialize Elements
+        async function initialize() {
+            try {
+                // Request the Payment Intent from our Node.js server
+                const response = await fetch('/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ /* You can pass amount/currency here if not hardcoded */ })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to fetch client secret.');
+                }
+
+                const { clientSecret } = await response.json();
+
+                if (clientSecret) {
+                    const appearance = { theme: 'stripe' };
+                    
+                    elements = stripe.elements({ appearance, clientSecret });
+                    
+                    const paymentElement = elements.create('payment');
+                    paymentElement.mount('#payment-element');
+                    
+                    // Enable the button once elements are mounted
+                    submitButton.disabled = false;
+                } else {
+                    throw new Error('Server did not return a valid client secret.');
+                }
+
+            } catch (error) {
+                paymentMessage.classList.add('text-red-600');
+                paymentMessage.textContent = `Setup Error: ${error.message}`;
+                console.error('Initialization error:', error);
+            }
+        }
+
+        // 3. Handle Form Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setLoading(true);
+
+            // Confirm the payment on the client side
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    // Specify the URL to redirect to after confirmation (Stripe handles this, 
+                    // but since we are using 'if_required', we rely on immediate success/failure response)
+                    return_url: window.location.href, // Simplest approach for local test
+                },
+                redirect: 'if_required', // Process payment without redirection if possible
+            });
+
+            if (error) {
+                // Show error to the customer
+                paymentMessage.classList.remove('text-green-600');
+                paymentMessage.classList.add('text-red-600');
+                paymentMessage.textContent = error.message;
+            } else {
+                // Payment was successful (status succeeded)
+                // The webhook will ultimately confirm fulfillment, but we can show immediate success
+                paymentMessage.classList.remove('text-red-600');
+                paymentMessage.classList.add('text-green-600');
+                paymentMessage.textContent = 'Payment Succeeded! Your transaction is complete.';
+                
+                // You can optionally disable the form/button here
+                submitButton.disabled = true;
+            }
+
+            setLoading(false);
+        });
+        
+        // Helper function for UI state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                submitButton.disabled = true;
+                buttonText.textContent = 'Processing...';
+            } else {
+                submitButton.disabled = false;
+                buttonText.textContent = 'Pay Now ($20.00)';
+            }
+        }
+
+        // Start the process
+        initialize();
+    </script>
+</body>
+</html>

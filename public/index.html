@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Visa Assessment</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Font Awesome for the Globe Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Load Flag Icons for country flags -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-red': '#e63946', // Deep, vibrant red for action buttons
+                        'light-bg': '#f5f5f5', // Very light background for the body
+                        'toggle-dark': '#3c3c3c', // Dark gray for active toggle buttons
+                        'toggle-light': '#f0f0f0', // Light gray for inactive toggle buttons
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for the modern form */
+        body {
+            background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+        
+        .form-card {
+            max-width: 1000px;
+            width: 95%;
+            min-height: 650px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Modern Input Styles */
+        .form-input, .form-select {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e2e8f0;
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            border-color: #e63946;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+            background: #ffffff;
+        }
+        
+        .form-input:hover, .form-select:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Modern Toggle Buttons */
+        .toggle-btn {
+            flex: 1;
+            padding: 14px 20px;
+            text-align: center;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .toggle-btn:hover::before {
+            left: 100%;
+        }
+        
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+        
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #e63946, #dc2626);
+            color: white;
+            border-color: #e63946;
+            box-shadow: 0 8px 25px rgba(230, 57, 70, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .toggle-btn.active:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+        
+        /* Enhanced Animations */
+        .step-content {
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Beautiful Error Messages */
+        .error-message {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border: 2px solid #f87171;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 4px 12px rgba(248, 113, 113, 0.15);
+        }
+        
+        .error-message.success {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-color: #4ade80;
+            box-shadow: 0 4px 12px rgba(74, 222, 128, 0.15);
+        }
+        
+        @keyframes shake {
+            0%, 20%, 40%, 60%, 80%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+        }
+        
+        /* Enhanced Progress Dots */
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 6px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .progress-dot.active {
+            background: linear-gradient(135deg, #e63946, #dc2626);
+            box-shadow: 0 0 20px rgba(230, 57, 70, 0.4);
+            transform: scale(1.3);
+        }
+        
+        .progress-dot.completed {
+            background: linear-gradient(135deg, #e63946, #dc2626);
+            opacity: 0.7;
+            transform: scale(1.1);
+        }
+        
+        .progress-dot.pending {
+            background: linear-gradient(145deg, #e2e8f0, #cbd5e1);
+        }
+        
+        /* Modern Button Styles */
+        .modern-btn {
+            background: linear-gradient(135deg, #e63946, #dc2626);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 32px;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(230, 57, 70, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modern-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(230, 57, 70, 0.35);
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+        
+        .modern-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* Loading Animation */
+        .loading {
+            position: relative;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        /* Floating labels effect */
+        .input-group {
+            position: relative;
+            margin-bottom: 24px;
+        }
+        
+        .floating-label {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            color: #64748b;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            background: white;
+            padding: 0 4px;
+        }
+        
+        .form-input:focus + .floating-label,
+        .form-input:not(:placeholder-shown) + .floating-label {
+            top: -8px;
+            left: 12px;
+            font-size: 12px;
+            color: #e63946;
+            font-weight: 600;
+        }
+        
+        /* Custom Select Styling */
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 48px;
+        }
+        
+        /* Flag icons styling */
+        .fi {
+            border-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Country code display styling */
+        #country-code-display {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        #country-code-display:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+        
+        /* Left panel enhancements */
+        .left-panel {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(230, 57, 70, 0.05) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Logo Section -->
+    <div class="mb-6">
+        <img src="img/logo.png"
+             alt="Global Leaders Logo"
+             class="h-24 sm:h-20 w-auto object-contain">
+    </div>
+
+    <!-- Main Form Container (Two Columns) -->
+    <div id="visa-form-card" class="form-card bg-white rounded-xl flex flex-col md:flex-row overflow-hidden">
+
+        <!-- Left Column: Static Information -->
+        <div class="md:w-5/12 p-8 flex flex-col justify-center items-center left-panel border-r border-gray-100">
+            <h2 id="left-title" class="text-3xl font-bold text-primary-red mb-4 text-center">Personal Information</h2>
+            <p id="left-subtitle" class="text-gray-600 text-sm mb-8 text-center max-w-xs leading-relaxed">
+                Your answers will help us determine your best visa options.
+            </p>
+            <!-- Globe Icon (instead of flag) -->
+            <div class="w-40 h-40 flex items-center justify-center bg-white rounded-full shadow-xl p-4 relative z-10">
+                <img src="img/logo2.png" alt="Global Leaders Globe" class="max-w-full max-h-full object-contain">
+            </div>
+        </div>
+
+        <!-- Right Column: Dynamic Form Steps -->
+        <form id="visa-inquiry-form" onsubmit="event.preventDefault();" class="md:w-7/12 p-8 flex flex-col justify-between">
+            
+            <!-- Form Step Content Area -->
+            <div id="step-container">
+                <!-- Step content will be injected/swapped here by JavaScript -->
+            </div>
+
+            <!-- Navigation and Error Message -->
+            <div class="mt-8 pt-6">
+                <div id="error-message" class="error-message hidden">
+                    <i class="fa-solid fa-exclamation-triangle text-red-500 text-lg"></i>
+                    <span class="text-red-700 font-medium">Please make a selection or fill in the required field.</span>
+                </div>
+                <div class="flex justify-end">
+                    <!-- Only NEXT or SUBMIT button is visible at a time -->
+                    <button type="button" id="next-button" onclick="nextStep()"
+                            class="modern-btn w-full">
+                        NEXT
+                    </button>
+                    <button type="submit" id="submit-button" onclick="submitForm()"
+                            class="modern-btn w-full hidden">
+                        SUBMIT
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Progress Dots Indicator -->
+    <div id="progress-dots" class="flex justify-center items-center mt-8">
+        <!-- Dots will be generated here by JavaScript -->
+    </div>
+
+    <!-- Hidden Submission Success Modal (Instead of an alert) -->
+    <div id="success-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white p-12 rounded-2xl shadow-2xl max-w-md text-center transform transition-all duration-300 scale-95">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-circle-check text-green-500 text-4xl"></i>
+            </div>
+            <h3 class="text-3xl font-bold text-gray-800 mb-4">Success!</h3>
+            <p class="text-gray-600 text-lg mb-8 leading-relaxed">Thank you for submitting your visa inquiry. Our expert consultants will review your information and contact you within 24 hours.</p>
+            <button onclick="window.location.reload()" class="modern-btn">
+                Start New Inquiry
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // Global state and configuration
+        let currentStep = 1;
+        const totalSteps = 5;
+        const formContainer = document.getElementById('step-container');
+        const progressDots = document.getElementById('progress-dots');
+        const nextButton = document.getElementById('next-button');
+        const submitButton = document.getElementById('submit-button');
+        const errorMessage = document.getElementById('error-message');
+        const successModal = document.getElementById('success-modal');
+        const leftTitle = document.getElementById('left-title');
+        const leftSubtitle = document.getElementById('left-subtitle');
+        
+        // Data structure to hold form values
+        const formData = {};
+
+        // Comprehensive country data with flags and phone codes
+        const countryData = {
+            'af': { name: 'Afghanistan', code: '+93', flag: 'af' },
+            'al': { name: 'Albania', code: '+355', flag: 'al' },
+            'dz': { name: 'Algeria', code: '+213', flag: 'dz' },
+            'ar': { name: 'Argentina', code: '+54', flag: 'ar' },
+            'am': { name: 'Armenia', code: '+374', flag: 'am' },
+            'au': { name: 'Australia', code: '+61', flag: 'au' },
+            'at': { name: 'Austria', code: '+43', flag: 'at' },
+            'az': { name: 'Azerbaijan', code: '+994', flag: 'az' },
+            'bh': { name: 'Bahrain', code: '+973', flag: 'bh' },
+            'bd': { name: 'Bangladesh', code: '+880', flag: 'bd' },
+            'by': { name: 'Belarus', code: '+375', flag: 'by' },
+            'be': { name: 'Belgium', code: '+32', flag: 'be' },
+            'br': { name: 'Brazil', code: '+55', flag: 'br' },
+            'bg': { name: 'Bulgaria', code: '+359', flag: 'bg' },
+            'ca': { name: 'Canada', code: '+1', flag: 'ca' },
+            'cl': { name: 'Chile', code: '+56', flag: 'cl' },
+            'cn': { name: 'China', code: '+86', flag: 'cn' },
+            'co': { name: 'Colombia', code: '+57', flag: 'co' },
+            'cr': { name: 'Costa Rica', code: '+506', flag: 'cr' },
+            'hr': { name: 'Croatia', code: '+385', flag: 'hr' },
+            'cz': { name: 'Czech Republic', code: '+420', flag: 'cz' },
+            'dk': { name: 'Denmark', code: '+45', flag: 'dk' },
+            'eg': { name: 'Egypt', code: '+20', flag: 'eg' },
+            'ee': { name: 'Estonia', code: '+372', flag: 'ee' },
+            'et': { name: 'Ethiopia', code: '+251', flag: 'et' },
+            'fi': { name: 'Finland', code: '+358', flag: 'fi' },
+            'fr': { name: 'France', code: '+33', flag: 'fr' },
+            'de': { name: 'Germany', code: '+49', flag: 'de' },
+            'gh': { name: 'Ghana', code: '+233', flag: 'gh' },
+            'gr': { name: 'Greece', code: '+30', flag: 'gr' },
+            'hk': { name: 'Hong Kong', code: '+852', flag: 'hk' },
+            'hu': { name: 'Hungary', code: '+36', flag: 'hu' },
+            'is': { name: 'Iceland', code: '+354', flag: 'is' },
+            'in': { name: 'India', code: '+91', flag: 'in' },
+            'id': { name: 'Indonesia', code: '+62', flag: 'id' },
+            'ir': { name: 'Iran', code: '+98', flag: 'ir' },
+            'iq': { name: 'Iraq', code: '+964', flag: 'iq' },
+            'ie': { name: 'Ireland', code: '+353', flag: 'ie' },
+            'il': { name: 'Israel', code: '+972', flag: 'il' },
+            'it': { name: 'Italy', code: '+39', flag: 'it' },
+            'jp': { name: 'Japan', code: '+81', flag: 'jp' },
+            'jo': { name: 'Jordan', code: '+962', flag: 'jo' },
+            'kz': { name: 'Kazakhstan', code: '+7', flag: 'kz' },
+            'ke': { name: 'Kenya', code: '+254', flag: 'ke' },
+            'kw': { name: 'Kuwait', code: '+965', flag: 'kw' },
+            'lv': { name: 'Latvia', code: '+371', flag: 'lv' },
+            'lb': { name: 'Lebanon', code: '+961', flag: 'lb' },
+            'ly': { name: 'Libya', code: '+218', flag: 'ly' },
+            'lt': { name: 'Lithuania', code: '+370', flag: 'lt' },
+            'lu': { name: 'Luxembourg', code: '+352', flag: 'lu' },
+            'my': { name: 'Malaysia', code: '+60', flag: 'my' },
+            'mv': { name: 'Maldives', code: '+960', flag: 'mv' },
+            'mx': { name: 'Mexico', code: '+52', flag: 'mx' },
+            'ma': { name: 'Morocco', code: '+212', flag: 'ma' },
+            'np': { name: 'Nepal', code: '+977', flag: 'np' },
+            'nl': { name: 'Netherlands', code: '+31', flag: 'nl' },
+            'nz': { name: 'New Zealand', code: '+64', flag: 'nz' },
+            'ng': { name: 'Nigeria', code: '+234', flag: 'ng' },
+            'no': { name: 'Norway', code: '+47', flag: 'no' },
+            'om': { name: 'Oman', code: '+968', flag: 'om' },
+            'pk': { name: 'Pakistan', code: '+92', flag: 'pk' },
+            'pe': { name: 'Peru', code: '+51', flag: 'pe' },
+            'ph': { name: 'Philippines', code: '+63', flag: 'ph' },
+            'pl': { name: 'Poland', code: '+48', flag: 'pl' },
+            'pt': { name: 'Portugal', code: '+351', flag: 'pt' },
+            'qa': { name: 'Qatar', code: '+974', flag: 'qa' },
+            'ro': { name: 'Romania', code: '+40', flag: 'ro' },
+            'ru': { name: 'Russia', code: '+7', flag: 'ru' },
+            'sa': { name: 'Saudi Arabia', code: '+966', flag: 'sa' },
+            'sg': { name: 'Singapore', code: '+65', flag: 'sg' },
+            'sk': { name: 'Slovakia', code: '+421', flag: 'sk' },
+            'si': { name: 'Slovenia', code: '+386', flag: 'si' },
+            'za': { name: 'South Africa', code: '+27', flag: 'za' },
+            'kr': { name: 'South Korea', code: '+82', flag: 'kr' },
+            'es': { name: 'Spain', code: '+34', flag: 'es' },
+            'lk': { name: 'Sri Lanka', code: '+94', flag: 'lk' },
+            'se': { name: 'Sweden', code: '+46', flag: 'se' },
+            'ch': { name: 'Switzerland', code: '+41', flag: 'ch' },
+            'sy': { name: 'Syria', code: '+963', flag: 'sy' },
+            'tw': { name: 'Taiwan', code: '+886', flag: 'tw' },
+            'th': { name: 'Thailand', code: '+66', flag: 'th' },
+            'tr': { name: 'Turkey', code: '+90', flag: 'tr' },
+            'ua': { name: 'Ukraine', code: '+380', flag: 'ua' },
+            'ae': { name: 'United Arab Emirates', code: '+971', flag: 'ae' },
+            'gb': { name: 'United Kingdom', code: '+44', flag: 'gb' },
+            'us': { name: 'United States', code: '+1', flag: 'us' },
+            'uy': { name: 'Uruguay', code: '+598', flag: 'uy' },
+            'uz': { name: 'Uzbekistan', code: '+998', flag: 'uz' },
+            've': { name: 'Venezuela', code: '+58', flag: 've' },
+            'vn': { name: 'Vietnam', code: '+84', flag: 'vn' },
+            'ye': { name: 'Yemen', code: '+967', flag: 'ye' }
+        };
+
+        // --- Step Definitions (Matching the images) ---
+
+        const steps = [
+            { // Step 1: Personal Information
+                id: 1,
+                title: "Personal Information",
+                subtitle: "Your answers will help us determine your best visa options.",
+                icon: '<i class="fa-solid fa-earth-americas text-8xl"></i>',
+                html: `
+                    <div class="space-y-8 step-content">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Gender</h3>
+                            <select id="gender" name="gender" required onchange="validateStep(1, false)"
+                                    class="form-select w-full p-4 rounded-xl text-base">
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Nationality of Applicant</h3>
+                            <select id="nationality" name="nationality" required onchange="handleNationalityChange(this.value)"
+                                    class="form-select w-full p-4 rounded-xl text-base">
+                                <option value="" disabled selected>Select Nationality</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Date Of Birth</h3>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Month</label>
+                                    <select id="dob-month" name="dob-month" required onchange="validateStep(1, false)" class="form-select w-full p-4 rounded-xl text-base">
+                                        <option value="" disabled selected>Month</option>
+                                        <option value="1">January</option>
+                                        <option value="2">February</option>
+                                        <option value="3">March</option>
+                                        <option value="4">April</option>
+                                        <option value="5">May</option>
+                                        <option value="6">June</option>
+                                        <option value="7">July</option>
+                                        <option value="8">August</option>
+                                        <option value="9">September</option>
+                                        <option value="10">October</option>
+                                        <option value="11">November</option>
+                                        <option value="12">December</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Day</label>
+                                    <select id="dob-day" name="dob-day" required onchange="validateStep(1, false)" class="form-select w-full p-4 rounded-xl text-base">
+                                        <option value="" disabled selected>Day</option>
+                                        ${Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Year</label>
+                                    <select id="dob-year" name="dob-year" required onchange="validateStep(1, false)" class="form-select w-full p-4 rounded-xl text-base">
+                                        <option value="" disabled selected>Year</option>
+                                        ${Array.from({ length: 70 }, (_, i) => `<option value="${2025 - i}">${2025 - i}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="age-error" class="error-message hidden mt-4">
+                                <i class="fa-solid fa-calendar-xmark text-red-500 text-lg"></i>
+                                <span class="text-red-700 font-medium">You must be at least 18 years old to proceed with the visa application.</span>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                fields: ['gender', 'nationality', 'dob-month', 'dob-day', 'dob-year']
+            },
+            { // Step 2: Marital & Application Type
+                id: 2,
+                title: "Application Details",
+                subtitle: "Help us understand your application requirements.",
+                icon: '<i class="fa-solid fa-users text-8xl"></i>',
+                html: `
+                    <div class="space-y-8 step-content">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Application Type?</h3>
+                            <div id="application-type" class="grid grid-cols-2 gap-4">
+                                <button type="button" data-value="single" onclick="handleToggle(this, 'application-type', 2)" class="toggle-btn">
+                                    <i class="fa-solid fa-user mb-2 text-lg"></i>
+                                    <div>Single</div>
+                                </button>
+                                <button type="button" data-value="family" onclick="handleToggle(this, 'application-type', 2)" class="toggle-btn">
+                                    <i class="fa-solid fa-users mb-2 text-lg"></i>
+                                    <div>Family</div>
+                                </button>
+                            </div>
+                            <input type="hidden" id="application-type-input" name="application-type" required>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Are You Married?</h3>
+                            <div id="marital-status" class="grid grid-cols-2 gap-4">
+                                <button type="button" data-value="yes" onclick="handleToggle(this, 'marital-status', 2)" class="toggle-btn">
+                                    <i class="fa-solid fa-heart mb-2 text-lg"></i>
+                                    <div>Yes</div>
+                                </button>
+                                <button type="button" data-value="no" onclick="handleToggle(this, 'marital-status', 2)" class="toggle-btn active">
+                                    <i class="fa-solid fa-user-minus mb-2 text-lg"></i>
+                                    <div>No</div>
+                                </button>
+                            </div>
+                            <input type="hidden" id="marital-status-input" name="married" required value="no">
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Contact Information</h3>
+                            <div class="space-y-4">
+                                <div class="input-group">
+                                    <input type="email" id="email" name="email" placeholder=" " required oninput="validateStep(2, false)"
+                                           class="form-input w-full p-4 rounded-xl text-base">
+                                    <label for="email" class="floating-label">Email Address</label>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Phone Number</label>
+                                    <div class="flex gap-3">
+                                        <div id="country-code-display" class="flex items-center bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-4 min-w-[120px]">
+                                            <span id="country-flag" class="fi fi-us mr-2 text-lg"></span>
+                                            <span id="country-code" class="font-medium text-gray-700">+1</span>
+                                        </div>
+                                        <div class="input-group flex-1">
+                                            <input type="tel" id="phone" name="phone" placeholder=" " required oninput="validateStep(2, false)"
+                                                   class="form-input w-full p-4 rounded-xl text-base">
+                                            <label for="phone" class="floating-label">Phone Number</label>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-2">Enter your phone number without the country code</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                fields: ['application-type', 'married', 'email', 'phone']
+            },
+            { // Step 3: Education History
+                id: 3,
+                title: "Education History",
+                subtitle: "Tell us about your educational background.",
+                icon: '<i class="fa-solid fa-graduation-cap text-8xl"></i>',
+                html: `
+                    <div class="space-y-8 step-content">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Have You Graduated From High School (Secondary School)?</h3>
+                            <div id="high-school" class="grid grid-cols-2 gap-4">
+                                <button type="button" data-value="yes" onclick="handleToggle(this, 'high-school', 3)" class="toggle-btn active">
+                                    <i class="fa-solid fa-check-circle mb-2 text-lg"></i>
+                                    <div>Yes</div>
+                                </button>
+                                <button type="button" data-value="no" onclick="handleToggle(this, 'high-school', 3)" class="toggle-btn">
+                                    <i class="fa-solid fa-times-circle mb-2 text-lg"></i>
+                                    <div>No</div>
+                                </button>
+                            </div>
+                            <input type="hidden" id="high-school-input" name="high-school" required value="yes">
+                            <div id="high-school-error" class="error-message hidden mt-4">
+                                <i class="fa-solid fa-graduation-cap text-red-500 text-lg"></i>
+                                <span class="text-red-700 font-medium">You must be graduated from high school to proceed with the visa application.</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Have You Had Any Further Formal Education?</h3>
+                            <div id="further-education" class="grid grid-cols-2 gap-4">
+                                <button type="button" data-value="yes" onclick="handleToggle(this, 'further-education', 3)" class="toggle-btn active">
+                                    <i class="fa-solid fa-university mb-2 text-lg"></i>
+                                    <div>Yes</div>
+                                </button>
+                                <button type="button" data-value="no" onclick="handleToggle(this, 'further-education', 3)" class="toggle-btn">
+                                    <i class="fa-solid fa-user-graduate mb-2 text-lg"></i>
+                                    <div>No</div>
+                                </button>
+                            </div>
+                            <input type="hidden" id="further-education-input" name="further-education" required value="yes">
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Highest Level of Education</h3>
+                            <select id="education-level" name="education-level" required onchange="validateStep(3, false)"
+                                    class="form-select w-full p-4 rounded-xl text-base">
+                                <option value="" disabled selected>Select Education Level</option>
+                                <option value="high-school">High School/Secondary</option>
+                                <option value="diploma">Diploma/Certificate</option>
+                                <option value="bachelor">Bachelor's Degree</option>
+                                <option value="master">Master's Degree</option>
+                                <option value="doctorate">Doctorate/PhD</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                fields: ['high-school', 'further-education', 'education-level']
+            },
+            { // Step 4: Language Skills
+                id: 4,
+                title: "Language Skills",
+                subtitle: "Your proficiency in English and French is crucial.",
+                icon: '<i class="fa-solid fa-language text-8xl"></i>',
+                html: `
+                    <div class="space-y-8 step-content">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">How Good Is Your English?</h3>
+                            <div id="english-level" class="grid grid-cols-2 gap-3">
+                                <button type="button" data-value="poor" onclick="handleToggle(this, 'english-level', 4)" class="toggle-btn">
+                                    <i class="fa-solid fa-star-half-stroke mb-2 text-lg"></i>
+                                    <div>Poor</div>
+                                </button>
+                                <button type="button" data-value="basic" onclick="handleToggle(this, 'english-level', 4)" class="toggle-btn">
+                                    <i class="fa-solid fa-star mb-2 text-lg"></i>
+                                    <div>Basic</div>
+                                </button>
+                                <button type="button" data-value="moderate" onclick="handleToggle(this, 'english-level', 4)" class="toggle-btn active">
+                                    <i class="fa-solid fa-star mb-2 text-lg"></i>
+                                    <div>Moderate</div>
+                                </button>
+                                <button type="button" data-value="proficient" onclick="handleToggle(this, 'english-level', 4)" class="toggle-btn">
+                                    <i class="fa-solid fa-star mb-2 text-lg"></i>
+                                    <div>Proficient</div>
+                                </button>
+                            </div>
+                            <input type="hidden" id="english-level-input" name="english-level" required value="moderate">
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Other Language Skills</h3>
+                            <div class="space-y-4">
+                                <div class="input-group">
+                                    <input type="text" id="other-language" name="other-language" placeholder=" " oninput="validateStep(4, false)"
+                                           class="form-input w-full p-4 rounded-xl text-base">
+                                    <label for="other-language" class="floating-label">What other language do you speak? (e.g., French, Spanish, Arabic)</label>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-medium text-gray-700 mb-4">Proficiency Level</h4>
+                                    <div id="other-language-level" class="grid grid-cols-2 gap-3">
+                                        <button type="button" data-value="poor" onclick="handleToggle(this, 'other-language-level', 4)" class="toggle-btn">
+                                            <i class="fa-solid fa-star-half-stroke mb-2 text-lg"></i>
+                                            <div>Poor</div>
+                                        </button>
+                                        <button type="button" data-value="basic" onclick="handleToggle(this, 'other-language-level', 4)" class="toggle-btn">
+                                            <i class="fa-solid fa-star mb-2 text-lg"></i>
+                                            <div>Basic</div>
+                                        </button>
+                                        <button type="button" data-value="moderate" onclick="handleToggle(this, 'other-language-level', 4)" class="toggle-btn">
+                                            <i class="fa-solid fa-star mb-2 text-lg"></i>
+                                            <div>Moderate</div>
+                                        </button>
+                                        <button type="button" data-value="proficient" onclick="handleToggle(this, 'other-language-level', 4)" class="toggle-btn">
+                                            <i class="fa-solid fa-star mb-2 text-lg"></i>
+                                            <div>Proficient</div>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="other-language-level-input" name="other-language-level">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                fields: ['english-level']
+            },
+            { // Step 5: Employment Status (Final Step)
+                id: 5,
+                title: "Employment Status",
+                subtitle: "We need this information for a complete assessment.",
+                icon: '<i class="fa-solid fa-briefcase text-8xl"></i>',
+                html: `
+                    <div class="space-y-8 step-content">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Are You Currently Employed?</h3>
+                            <div id="employment-status" class="grid grid-cols-2 gap-4">
+                                <button type="button" data-value="yes" onclick="handleToggle(this, 'employment-status', 5)" class="toggle-btn">
+                                    <i class="fa-solid fa-briefcase mb-2 text-lg"></i>
+                                    <div>Yes</div>
+                                </button>
+                                <button type="button" data-value="no" onclick="handleToggle(this, 'employment-status', 5)" class="toggle-btn active">
+                                    <i class="fa-solid fa-user-clock mb-2 text-lg"></i>
+                                    <div>No</div>
+                                </button>
+                            </div>
+                            <input type="hidden" id="employment-status-input" name="employment-status" required value="no">
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">How Many Years Have You Worked?</h3>
+                            <select id="years-worked" name="years-worked" required onchange="validateStep(5, false)"
+                                    class="form-select w-full p-4 rounded-xl text-base">
+                                <option value="" disabled selected>Select years of experience</option>
+                                <option value="0">0 Years (Fresh Graduate)</option>
+                                <option value="1-2">1-2 Years</option>
+                                <option value="3-5">3-5 Years</option>
+                                <option value="6-10">6-10 Years</option>
+                                <option value="10+">10+ Years</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="text" id="job-title" name="job-title" placeholder=" " required oninput="validateStep(5, false)"
+                                   class="form-input w-full p-4 rounded-xl text-base">
+                            <label for="job-title" class="floating-label">Current/Previous Job Title</label>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Annual Income (USD)</h3>
+                            <select id="income" name="income" required onchange="validateStep(5, false)"
+                                    class="form-select w-full p-4 rounded-xl text-base">
+                                <option value="" disabled selected>Select income range</option>
+                                <option value="0-25k">$0 - $25,000</option>
+                                <option value="25k-50k">$25,000 - $50,000</option>
+                                <option value="50k-75k">$50,000 - $75,000</option>
+                                <option value="75k-100k">$75,000 - $100,000</option>
+                                <option value="100k+">$100,000+</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                fields: ['employment-status', 'years-worked', 'job-title', 'income']
+            }
+        ];
+
+        // --- Core Form Logic ---
+
+        /**
+         * Renders the current step's content and updates the UI (dots, buttons, left panel).
+         */
+        function renderStep() {
+            const stepData = steps[currentStep - 1];
+            
+            // 1. Update Left Panel Content
+            leftTitle.textContent = stepData.title;
+            leftSubtitle.textContent = stepData.subtitle;
+            
+            // 2. Update Right Panel Content
+            formContainer.innerHTML = stepData.html;
+            
+            // 3. Update Progress Dots
+            updateProgressDots();
+            
+            // 4. Update Buttons
+            nextButton.classList.toggle('hidden', currentStep === totalSteps);
+            submitButton.classList.toggle('hidden', currentStep !== totalSteps);
+            
+            // 5. Restore saved form data for the current step (if available)
+            stepData.fields.forEach(fieldName => {
+                const element = document.getElementById(fieldName);
+                if (element && formData[fieldName]) {
+                    if (element.tagName === 'SELECT' || element.tagName === 'INPUT' && element.type === 'text') {
+                        element.value = formData[fieldName];
+                    } else if (element.tagName === 'INPUT' && element.type === 'hidden') {
+                        element.value = formData[fieldName];
+                        // Re-activate the corresponding button
+                        const buttonContainer = document.getElementById(element.id.replace('-input', ''));
+                        if (buttonContainer) {
+                            buttonContainer.querySelectorAll('.toggle-btn').forEach(btn => {
+                                btn.classList.toggle('active', btn.getAttribute('data-value') === formData[fieldName]);
+                            });
+                        }
+                    }
+                }
+            });
+
+             // Ensure form data is stored for radio/toggle default values
+             stepData.fields.forEach(fieldName => {
+                const inputElement = document.querySelector(`[name="${fieldName}"]`);
+                if (inputElement && inputElement.type === 'hidden' && !formData[fieldName]) {
+                    formData[fieldName] = inputElement.value;
+                }
+             });
+            
+            // Hide any previous error message
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('age-error')?.classList.add('hidden');
+            document.getElementById('high-school-error')?.classList.add('hidden');
+            
+            // Update phone country code display for step 2
+            if (currentStep === 2 && formData.selectedCountry) {
+                setTimeout(() => {
+                    updatePhoneDisplay(formData.selectedCountry);
+                }, 100);
+            }
+            
+            // Populate nationality dropdown for step 1
+            if (currentStep === 1) {
+                setTimeout(() => {
+                    const nationalitySelect = document.getElementById('nationality');
+                    if (nationalitySelect) {
+                        // Keep the first option and add countries
+                        const firstOption = nationalitySelect.innerHTML;
+                        nationalitySelect.innerHTML = firstOption + generateNationalityOptions();
+                        
+                        // Restore selected value if exists
+                        if (formData.nationality) {
+                            nationalitySelect.value = formData.nationality;
+                        }
+                    }
+                }, 100);
+            }
+        }
+
+        /**
+         * Generates and updates the progress indicator dots.
+         */
+        function updateProgressDots() {
+            progressDots.innerHTML = '';
+            for (let i = 1; i <= totalSteps; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('progress-dot');
+                
+                if (i === currentStep) {
+                    dot.classList.add('active');
+                } else if (i < currentStep) {
+                    dot.classList.add('completed');
+                } else {
+                    dot.classList.add('pending');
+                }
+                progressDots.appendChild(dot);
+            }
+        }
+
+        /**
+         * Handles the click event for toggle buttons (Yes/No, Single/Family, etc.).
+         * @param {HTMLElement} clickedButton - The button that was clicked.
+         * @param {string} containerId - The ID of the button group container.
+         * @param {number} stepNumber - The step number for validation.
+         */
+        function handleToggle(clickedButton, containerId, stepNumber) {
+            const container = document.getElementById(containerId);
+            const hiddenInput = document.getElementById(containerId + '-input');
+            const value = clickedButton.getAttribute('data-value');
+
+            if (!container) {
+                console.error('Container not found:', containerId);
+                return;
+            }
+
+            if (!hiddenInput) {
+                console.error('Hidden input not found:', containerId + '-input');
+                return;
+            }
+
+            // 1. Deactivate all buttons in the group and activate the clicked one
+            container.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            clickedButton.classList.add('active');
+
+            // 2. Set the value of the hidden input field
+            hiddenInput.value = value;
+            
+            // 3. Store in global data and validate (don't show errors on selection)
+            formData[hiddenInput.name] = value;
+            validateStep(stepNumber, false); // Don't show errors during input
+        }
+
+        /**
+         * Generates nationality options HTML
+         */
+        function generateNationalityOptions() {
+            return Object.entries(countryData).map(([code, data]) => 
+                `<option value="${code}" data-phone-code="${data.code}" data-flag="${data.flag}">${data.name}</option>`
+            ).join('');
+        }
+
+        /**
+         * Updates the phone number display with country flag and code
+         */
+        function updatePhoneDisplay(countryInfo) {
+            const flagElement = document.getElementById('country-flag');
+            const codeElement = document.getElementById('country-code');
+            
+            if (flagElement && codeElement && countryInfo) {
+                flagElement.className = `fi fi-${countryInfo.flag} mr-2 text-lg`;
+                codeElement.textContent = countryInfo.code;
+            }
+        }
+
+        /**
+         * Handles nationality selection and stores country data for phone field
+         */
+        function handleNationalityChange(nationalityCode) {
+            if (nationalityCode && countryData[nationalityCode]) {
+                formData.selectedCountry = countryData[nationalityCode];
+                formData.nationality = nationalityCode;
+            }
+            validateStep(1, false);
+        }
+
+        /**
+         * Calculates age from date of birth and validates if user is 18+
+         * @returns {boolean} True if user is 18 or older, false otherwise
+         */
+        function validateAge() {
+            const month = document.getElementById('dob-month')?.value;
+            const day = document.getElementById('dob-day')?.value;
+            const year = document.getElementById('dob-year')?.value;
+            
+            if (!month || !day || !year) {
+                return false;
+            }
+            
+            const birthDate = new Date(year, month - 1, day);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            // Check if birthday has occurred this year
+            const actualAge = (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) 
+                ? age - 1 
+                : age;
+            
+            return actualAge >= 18;
+        }
+
+        /**
+         * Validates email format
+         * @param {string} email - Email to validate
+         * @returns {boolean} True if valid email format
+         */
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        /**
+         * Validates phone number format
+         * @param {string} phone - Phone number to validate
+         * @returns {boolean} True if valid phone format
+         */
+        function validatePhone(phone) {
+            const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
+            return phoneRegex.test(phone);
+        }
+
+        /**
+         * Validates the fields in the current step and saves data.
+         * @param {number} stepNumber - The step number to validate.
+         * @param {boolean} showErrors - Whether to show error messages (default: false)
+         * @returns {boolean} True if validation passes, false otherwise.
+         */
+        function validateStep(stepNumber, showErrors = false) {
+            const stepData = steps[stepNumber - 1];
+            let isValid = true;
+            let errorMessage = '';
+            
+            // Clear previous error messages only if we're going to show new ones
+            if (showErrors) {
+                document.getElementById('error-message').classList.add('hidden');
+                document.getElementById('age-error')?.classList.add('hidden');
+                document.getElementById('high-school-error')?.classList.add('hidden');
+            }
+
+            stepData.fields.forEach(fieldName => {
+                const element = document.querySelector(`[name="${fieldName}"]`);
+                
+                if (element) {
+                    let value = element.value.trim();
+
+                    // Specific check for select elements
+                    if (element.tagName === 'SELECT' && element.selectedIndex === 0) {
+                        value = '';
+                    }
+                    
+                    if (!value) {
+                        isValid = false;
+                        if (showErrors) {
+                            errorMessage = 'Please fill in all required fields.';
+                        }
+                    }
+                    
+                    // Specific validations
+                    if (value && fieldName === 'email' && !validateEmail(value)) {
+                        isValid = false;
+                        if (showErrors) {
+                            errorMessage = 'Please enter a valid email address.';
+                        }
+                    }
+                    
+                    if (value && fieldName === 'phone' && !validatePhone(value)) {
+                        isValid = false;
+                        if (showErrors) {
+                            errorMessage = 'Please enter a valid phone number.';
+                        }
+                    }
+                    
+                    // Age validation for step 1 (prioritize this over general validation)
+                    if (stepNumber === 1 && fieldName === 'dob-year' && value) {
+                        if (!validateAge()) {
+                            isValid = false;
+                            if (showErrors) {
+                                document.getElementById('age-error')?.classList.remove('hidden');
+                                // Don't show general error message when age error is shown
+                                return isValid;
+                            }
+                        }
+                    }
+                    
+                    // High school graduation validation for step 3
+                    if (stepNumber === 3 && fieldName === 'high-school' && value === 'no') {
+                        isValid = false;
+                        if (showErrors) {
+                            document.getElementById('high-school-error')?.classList.remove('hidden');
+                            // Don't show general error message when high school error is shown
+                            return isValid;
+                        }
+                    }
+                    
+                    // Save valid values to formData
+                    if (value) {
+                        formData[fieldName] = value;
+                    }
+                }
+            });
+
+            // Special validation for step 4 - other language fields (optional but linked)
+            if (stepNumber === 4) {
+                const otherLang = document.querySelector('[name="other-language"]')?.value.trim();
+                const otherLangLevel = document.querySelector('[name="other-language-level"]')?.value.trim();
+                
+                // If user entered a language, they must select proficiency level
+                if (otherLang && !otherLangLevel) {
+                    isValid = false;
+                    if (showErrors) {
+                        errorMessage = 'Please select your proficiency level for the language you entered.';
+                    }
+                }
+                // If user selected proficiency but no language, require language
+                else if (!otherLang && otherLangLevel) {
+                    isValid = false;
+                    if (showErrors) {
+                        errorMessage = 'Please enter the language name for the proficiency level you selected.';
+                    }
+                }
+                
+                // Save the optional language data if both are provided
+                if (otherLang && otherLangLevel) {
+                    formData['other-language'] = otherLang;
+                    formData['other-language-level'] = otherLangLevel;
+                } else if (otherLang) {
+                    formData['other-language'] = otherLang;
+                } else if (otherLangLevel) {
+                    formData['other-language-level'] = otherLangLevel;
+                }
+            }
+
+            // Update error message display only if showErrors is true
+            if (!isValid && errorMessage && showErrors) {
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.querySelector('span').textContent = errorMessage;
+                errorDiv.classList.remove('hidden');
+            }
+
+            return isValid;
+        }
+
+        /**
+         * Moves to the next step after successful validation.
+         */
+        function nextStep() {
+            const nextBtn = document.getElementById('next-button');
+            
+            // Add loading state
+            nextBtn.classList.add('loading');
+            nextBtn.disabled = true;
+            
+            // Simulate processing time for better UX
+            setTimeout(() => {
+                if (validateStep(currentStep, true)) { // Show errors when clicking Next
+                    if (currentStep < totalSteps) {
+                        currentStep++;
+                        renderStep();
+                    }
+                }
+                
+                // Remove loading state
+                nextBtn.classList.remove('loading');
+                nextBtn.disabled = false;
+            }, 500);
+        }
+        
+        /**
+         * Final submission handler.
+         */
+        function submitForm() {
+            const submitBtn = document.getElementById('submit-button');
+            
+            // Add loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                if (validateStep(currentStep, true)) { // Show errors when submitting
+                    // In a real application, you would send the `formData` object to a server here.
+                    console.log("--- FINAL FORM DATA ---");
+                    console.log(formData);
+                    console.log("-----------------------");
+
+                    // Show the success modal with animation
+                    if (window.showSuccessModal) {
+                        window.showSuccessModal();
+                    } else {
+                        successModal.classList.remove('hidden');
+                    }
+                }
+                
+                // Remove loading state
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }, 1000);
+        }
+
+        // Initialize the form UI on load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderStep();
+            
+            // Enhance success modal animation
+            const modal = document.getElementById('success-modal');
+            const modalContent = modal.querySelector('div > div');
+            
+            // Add animation when modal shows
+            const originalShow = () => {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95');
+                    modalContent.classList.add('scale-100');
+                }, 10);
+            };
+            
+            // Override the modal display
+            window.showSuccessModal = () => {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modalContent.style.transform = 'scale(1)';
+                }, 10);
+            };
+        });
+    </script>
+</body>
+</html>
