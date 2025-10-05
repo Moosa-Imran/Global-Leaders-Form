@@ -334,6 +334,82 @@
             animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
+        /* Mobile responsive payment modal */
+        .payment-modal {
+            max-height: 90vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+        }
+        
+        /* Disabled employment fields styling */
+        .employment-fields-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            background-color: #f9fafb;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .employment-fields-disabled input,
+        .employment-fields-disabled select {
+            background-color: #f3f4f6 !important;
+            cursor: not-allowed !important;
+        }
+        
+        /* Disabled education fields styling */
+        .education-fields-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            background-color: #f9fafb;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .education-fields-disabled .toggle-btn,
+        .education-fields-disabled select {
+            background-color: #f3f4f6 !important;
+            cursor: not-allowed !important;
+        }
+        
+        @media (max-width: 768px) {
+            .payment-modal {
+                max-height: 95vh;
+                margin: 10px;
+                max-width: calc(100vw - 20px);
+            }
+            
+            .payment-modal .grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .payment-modal .p-8 {
+                padding: 1rem !important;
+            }
+            
+            .payment-modal h2 {
+                font-size: 1.25rem !important;
+            }
+            
+            /* Enable zoom and prevent zoom disable */
+            .payment-modal * {
+                touch-action: manipulation;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .payment-modal {
+                margin: 5px;
+                max-width: calc(100vw - 10px);
+                border-radius: 8px;
+            }
+            
+            .payment-modal .space-y-4 > * + * {
+                margin-top: 0.75rem !important;
+            }
+        }
+        
         /* Form data display styling */
         .form-data-summary {
             background: linear-gradient(145deg, #ffffff, #f8fafc);
@@ -440,7 +516,7 @@
 
     <!-- Payment Checkout Section -->
     <div id="payment-section" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden payment-modal">
             <div class="grid md:grid-cols-2 gap-0">
                 <!-- Left Side - Form Data Summary -->
                 <div class="payment-section p-8">
@@ -619,6 +695,13 @@
                 icon: '<i class="fa-solid fa-earth-americas text-8xl"></i>',
                 html: `
                     <div class="space-y-8 step-content">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Name</h3>
+                        <div class="input-group">
+                            <input type="text" id="full-name" name="full-name" placeholder=" " required oninput="validateStep(1, false)"
+                                   class="form-input w-full p-4 rounded-xl text-base">
+                            <label for="full-name" class="floating-label">Full Name</label>
+                        </div>
+
                         <div>
                             <h3 class="text-xl font-semibold text-gray-800 mb-4">Gender</h3>
                             <select id="gender" name="gender" required onchange="validateStep(1, false)"
@@ -681,7 +764,7 @@
                         </div>
                     </div>
                 `,
-                fields: ['gender', 'nationality', 'dob-month', 'dob-day', 'dob-year']
+                fields: ['full-name', 'gender', 'nationality', 'dob-month', 'dob-day', 'dob-year']
             },
             { // Step 2: Marital & Application Type
                 id: 2,
@@ -759,7 +842,7 @@
                         <div>
                             <h3 class="text-xl font-semibold text-gray-800 mb-6">Have You Graduated From High School (Secondary School)?</h3>
                             <div id="high-school" class="grid grid-cols-2 gap-4">
-                                <button type="button" data-value="yes" onclick="handleToggle(this, 'high-school', 3)" class="toggle-btn active">
+                                <button type="button" data-value="yes" onclick="handleToggle(this, 'high-school', 3)" class="toggle-btn">
                                     <i class="fa-solid fa-check-circle mb-2 text-lg"></i>
                                     <div>Yes</div>
                                 </button>
@@ -768,39 +851,37 @@
                                     <div>No</div>
                                 </button>
                             </div>
-                            <input type="hidden" id="high-school-input" name="high-school" required value="yes">
-                            <div id="high-school-error" class="error-message hidden mt-4">
-                                <i class="fa-solid fa-graduation-cap text-red-500 text-lg"></i>
-                                <span class="text-red-700 font-medium">You must be graduated from high school to proceed with the visa application.</span>
-                            </div>
+                            <input type="hidden" id="high-school-input" name="high-school" required value="">
                         </div>
                         
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Have You Had Any Further Formal Education?</h3>
-                            <div id="further-education" class="grid grid-cols-2 gap-4">
-                                <button type="button" data-value="yes" onclick="handleToggle(this, 'further-education', 3)" class="toggle-btn active">
-                                    <i class="fa-solid fa-university mb-2 text-lg"></i>
-                                    <div>Yes</div>
-                                </button>
-                                <button type="button" data-value="no" onclick="handleToggle(this, 'further-education', 3)" class="toggle-btn">
-                                    <i class="fa-solid fa-user-graduate mb-2 text-lg"></i>
-                                    <div>No</div>
-                                </button>
+                        <div id="further-education-section" class="">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-6">Have You Had Any Further Formal Education?</h3>
+                                <div id="further-education" class="grid grid-cols-2 gap-4">
+                                    <button type="button" data-value="yes" onclick="handleToggle(this, 'further-education', 3)" class="toggle-btn">
+                                        <i class="fa-solid fa-university mb-2 text-lg"></i>
+                                        <div>Yes</div>
+                                    </button>
+                                    <button type="button" data-value="no" onclick="handleToggle(this, 'further-education', 3)" class="toggle-btn">
+                                        <i class="fa-solid fa-user-graduate mb-2 text-lg"></i>
+                                        <div>No</div>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="further-education-input" name="further-education" required value="">
                             </div>
-                            <input type="hidden" id="further-education-input" name="further-education" required value="yes">
-                        </div>
 
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Highest Level of Education</h3>
-                            <select id="education-level" name="education-level" required onchange="validateStep(3, false)"
-                                    class="form-select w-full p-4 rounded-xl text-base">
-                                <option value="" disabled selected>Select Education Level</option>
-                                <option value="high-school">High School/Secondary</option>
-                                <option value="diploma">Diploma/Certificate</option>
-                                <option value="bachelor">Bachelor's Degree</option>
-                                <option value="master">Master's Degree</option>
-                                <option value="doctorate">Doctorate/PhD</option>
-                            </select>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Highest Level of Education</h3>
+                                <select id="education-level" name="education-level" required onchange="validateStep(3, false)"
+                                        class="form-select w-full p-4 rounded-xl text-base">
+                                    <option value="" disabled selected>Select Education Level</option>
+                                    <option value="high-school">High School/Secondary</option>
+                                    <option value="diploma">Diploma/Certificate</option>
+                                    <option value="bachelor">Bachelor's Degree</option>
+                                    <option value="master">Master's Degree</option>
+                                    <option value="doctorate">Doctorate/PhD</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 `,
@@ -881,7 +962,7 @@
                     <div class="space-y-8 step-content">
                         <div>
                             <h3 class="text-xl font-semibold text-gray-800 mb-6">Are You Currently Employed?</h3>
-                            <div id="employment-status" class="grid grid-cols-2 gap-4">
+                            <div id="employment-status" class="grid grid-cols-3 gap-4">
                                 <button type="button" data-value="yes" onclick="handleToggle(this, 'employment-status', 5)" class="toggle-btn">
                                     <i class="fa-solid fa-briefcase mb-2 text-lg"></i>
                                     <div>Yes</div>
@@ -890,40 +971,46 @@
                                     <i class="fa-solid fa-user-clock mb-2 text-lg"></i>
                                     <div>No</div>
                                 </button>
+                                <button type="button" data-value="no-experience" onclick="handleToggle(this, 'employment-status', 5)" class="toggle-btn">
+                                    <i class="fa-solid fa-graduation-cap mb-2 text-lg"></i>
+                                    <div>No Experience</div>
+                                </button>
                             </div>
                             <input type="hidden" id="employment-status-input" name="employment-status" required value="no">
                         </div>
 
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">How Many Years Have You Worked?</h3>
-                            <select id="years-worked" name="years-worked" required onchange="validateStep(5, false)"
-                                    class="form-select w-full p-4 rounded-xl text-base">
-                                <option value="" disabled selected>Select years of experience</option>
-                                <option value="0">0 Years (Fresh Graduate)</option>
-                                <option value="1-2">1-2 Years</option>
-                                <option value="3-5">3-5 Years</option>
-                                <option value="6-10">6-10 Years</option>
-                                <option value="10+">10+ Years</option>
-                            </select>
-                        </div>
+                        <div id="employment-fields" class="">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">How Many Years Have You Worked?</h3>
+                                <select id="years-worked" name="years-worked" required onchange="validateStep(5, false)"
+                                        class="form-select w-full p-4 rounded-xl text-base">
+                                    <option value="" disabled selected>Select years of experience</option>
+                                    <option value="0">0 Years (Fresh Graduate)</option>
+                                    <option value="1-2">1-2 Years</option>
+                                    <option value="3-5">3-5 Years</option>
+                                    <option value="6-10">6-10 Years</option>
+                                    <option value="10+">10+ Years</option>
+                                </select>
+                            </div>
 
-                        <div class="input-group">
-                            <input type="text" id="job-title" name="job-title" placeholder=" " required oninput="validateStep(5, false)"
-                                   class="form-input w-full p-4 rounded-xl text-base">
-                            <label for="job-title" class="floating-label">Current/Previous Job Title</label>
-                        </div>
+                            <div class="input-group">
+                                <input type="text" id="job-title" name="job-title" placeholder=" " required oninput="validateStep(5, false)"
+                                       class="form-input w-full p-4 rounded-xl text-base">
+                                <label for="job-title" class="floating-label">Current/Previous Job Title</label>
+                            </div>
 
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Annual Income (USD)</h3>
-                            <select id="income" name="income" required onchange="validateStep(5, false)"
-                                    class="form-select w-full p-4 rounded-xl text-base">
-                                <option value="" disabled selected>Select income range</option>
-                                <option value="0-25k">$0 - $25,000</option>
-                                <option value="25k-50k">$25,000 - $50,000</option>
-                                <option value="50k-75k">$50,000 - $75,000</option>
-                                <option value="75k-100k">$75,000 - $100,000</option>
-                                <option value="100k+">$100,000+</option>
-                            </select>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Annual Income (USD)</h3>
+                                <select id="income" name="income" required onchange="validateStep(5, false)"
+                                        class="form-select w-full p-4 rounded-xl text-base">
+                                    <option value="" disabled selected>Select income range</option>
+                                    <option value="0-25k">$0 - $25,000</option>
+                                    <option value="25k-50k">$25,000 - $50,000</option>
+                                    <option value="50k-75k">$50,000 - $75,000</option>
+                                    <option value="75k-100k">$75,000 - $100,000</option>
+                                    <option value="100k+">$100,000+</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 `,
@@ -983,7 +1070,6 @@
             // Hide any previous error message
             document.getElementById('error-message').classList.add('hidden');
             document.getElementById('age-error')?.classList.add('hidden');
-            document.getElementById('high-school-error')?.classList.add('hidden');
             
             // Update phone country code display for step 2
             if (currentStep === 2 && formData.selectedCountry) {
@@ -1060,9 +1146,108 @@
             // 2. Set the value of the hidden input field
             hiddenInput.value = value;
             
-            // 3. Store in global data and validate (don't show errors on selection)
+            // 3. Handle employment status special logic
+            if (containerId === 'employment-status') {
+                handleEmploymentStatusChange(value);
+            }
+            
+            // 4. Handle high school status special logic
+            if (containerId === 'high-school') {
+                handleHighSchoolStatusChange(value);
+            }
+            
+            // 5. Store in global data and validate (don't show errors on selection)
             formData[hiddenInput.name] = value;
             validateStep(stepNumber, false); // Don't show errors during input
+        }
+
+        /**
+         * Handles employment status changes and enables/disables employment fields
+         */
+        function handleEmploymentStatusChange(status) {
+            const employmentFields = document.getElementById('employment-fields');
+            const yearsWorkedSelect = document.getElementById('years-worked');
+            const jobTitleInput = document.getElementById('job-title');
+            const incomeSelect = document.getElementById('income');
+            
+            if (status === 'no-experience') {
+                // Disable employment fields for no experience
+                employmentFields.classList.add('employment-fields-disabled');
+                
+                // Set default values and remove required attributes
+                yearsWorkedSelect.value = '0';
+                yearsWorkedSelect.removeAttribute('required');
+                
+                jobTitleInput.value = 'No Previous Experience';
+                jobTitleInput.removeAttribute('required');
+                
+                incomeSelect.value = '0-25k';
+                incomeSelect.removeAttribute('required');
+                
+                // Update form data
+                formData['years-worked'] = '0';
+                formData['job-title'] = 'No Previous Experience';
+                formData['income'] = '0-25k';
+                
+            } else {
+                // Enable employment fields for employed/unemployed
+                employmentFields.classList.remove('employment-fields-disabled');
+                
+                // Re-add required attributes and clear default values
+                yearsWorkedSelect.setAttribute('required', 'required');
+                yearsWorkedSelect.value = '';
+                
+                jobTitleInput.setAttribute('required', 'required');
+                jobTitleInput.value = '';
+                
+                incomeSelect.setAttribute('required', 'required');
+                incomeSelect.value = '';
+                
+                // Clear form data for these fields
+                delete formData['years-worked'];
+                delete formData['job-title'];
+                delete formData['income'];
+            }
+        }
+
+        /**
+         * Handles high school status changes and enables/disables further education fields
+         */
+        function handleHighSchoolStatusChange(status) {
+            const educationSection = document.getElementById('further-education-section');
+            const furtherEducationInput = document.getElementById('further-education-input');
+            const educationLevelSelect = document.getElementById('education-level');
+            
+            if (status === 'no') {
+                // Disable further education fields when no high school graduation
+                educationSection.classList.add('education-fields-disabled');
+                
+                // Set default values and remove required attributes
+                furtherEducationInput.value = 'no';
+                furtherEducationInput.removeAttribute('required');
+                
+                educationLevelSelect.value = '';
+                educationLevelSelect.removeAttribute('required');
+                
+                // Update form data
+                formData['further-education'] = 'no';
+                formData['education-level'] = 'No High School Diploma';
+                
+            } else {
+                // Enable further education fields when high school graduated
+                educationSection.classList.remove('education-fields-disabled');
+                
+                // Re-add required attributes and clear default values
+                furtherEducationInput.setAttribute('required', 'required');
+                furtherEducationInput.value = '';
+                
+                educationLevelSelect.setAttribute('required', 'required');
+                educationLevelSelect.value = '';
+                
+                // Clear form data for these fields
+                delete formData['further-education'];
+                delete formData['education-level'];
+            }
         }
 
         /**
@@ -1159,7 +1344,6 @@
             if (showErrors) {
                 document.getElementById('error-message').classList.add('hidden');
                 document.getElementById('age-error')?.classList.add('hidden');
-                document.getElementById('high-school-error')?.classList.add('hidden');
             }
 
             stepData.fields.forEach(fieldName => {
@@ -1171,6 +1355,39 @@
                     // Specific check for select elements
                     if (element.tagName === 'SELECT' && element.selectedIndex === 0) {
                         value = '';
+                    }
+                    
+                    // Special handling for employment status = 'no-experience'
+                    if (stepNumber === 5 && formData['employment-status'] === 'no-experience') {
+                        // Skip validation for employment fields when no experience is selected
+                        if (fieldName === 'years-worked' || fieldName === 'job-title' || fieldName === 'income') {
+                            // Set default values if not already set
+                            if (fieldName === 'years-worked' && !formData['years-worked']) {
+                                formData['years-worked'] = '0';
+                            }
+                            if (fieldName === 'job-title' && !formData['job-title']) {
+                                formData['job-title'] = 'No Previous Experience';
+                            }
+                            if (fieldName === 'income' && !formData['income']) {
+                                formData['income'] = '0-25k';
+                            }
+                            return; // Skip validation for these fields
+                        }
+                    }
+                    
+                    // Special handling for high school = 'no'
+                    if (stepNumber === 3 && formData['high-school'] === 'no') {
+                        // Skip validation for further education fields when no high school
+                        if (fieldName === 'further-education' || fieldName === 'education-level') {
+                            // Set default values if not already set
+                            if (fieldName === 'further-education' && !formData['further-education']) {
+                                formData['further-education'] = 'no';
+                            }
+                            if (fieldName === 'education-level' && !formData['education-level']) {
+                                formData['education-level'] = 'No High School Diploma';
+                            }
+                            return; // Skip validation for these fields
+                        }
                     }
                     
                     if (!value) {
@@ -1204,16 +1421,6 @@
                                 // Don't show general error message when age error is shown
                                 return isValid;
                             }
-                        }
-                    }
-                    
-                    // High school graduation validation for step 3
-                    if (stepNumber === 3 && fieldName === 'high-school' && value === 'no') {
-                        isValid = false;
-                        if (showErrors) {
-                            document.getElementById('high-school-error')?.classList.remove('hidden');
-                            // Don't show general error message when high school error is shown
-                            return isValid;
                         }
                     }
                     
@@ -1377,7 +1584,18 @@
         function displayFormDataSummary() {
             const displayContainer = document.getElementById('form-data-display');
             
+            // Helper function to format employment status
+            const getEmploymentStatusText = (status) => {
+                switch(status) {
+                    case 'yes': return 'Employed';
+                    case 'no': return 'Unemployed';
+                    case 'no-experience': return 'No Previous Experience';
+                    default: return 'Not specified';
+                }
+            };
+            
             const summaryData = [
+                { label: 'Full Name', value: formData['full-name'] || 'Not specified' },
                 { label: 'Gender', value: formData.gender || 'Not specified' },
                 { label: 'Nationality', value: formData.selectedCountry ? formData.selectedCountry.name : 'Not specified' },
                 { label: 'Date of Birth', value: `${formData['dob-month']}/${formData['dob-day']}/${formData['dob-year']}` || 'Not specified' },
@@ -1386,12 +1604,12 @@
                 { label: 'Email', value: formData.email || 'Not specified' },
                 { label: 'Phone', value: `${formData.selectedCountry ? formData.selectedCountry.code : ''} ${formData.phone}` || 'Not specified' },
                 { label: 'High School Graduate', value: formData['high-school'] === 'yes' ? 'Yes' : 'No' },
-                { label: 'Further Education', value: formData['further-education'] === 'yes' ? 'Yes' : 'No' },
-                { label: 'Education Level', value: formData['education-level'] || 'Not specified' },
+                { label: 'Further Education', value: formData['high-school'] === 'no' ? 'N/A (No High School)' : (formData['further-education'] === 'yes' ? 'Yes' : 'No') },
+                { label: 'Education Level', value: formData['education-level'] || (formData['high-school'] === 'no' ? 'No High School Diploma' : 'Not specified') },
                 { label: 'English Level', value: formData['english-level'] || 'Not specified' },
                 { label: 'Other Language', value: formData['other-language'] || 'None specified' },
                 { label: 'Other Language Level', value: formData['other-language-level'] || 'N/A' },
-                { label: 'Employment Status', value: formData['employment-status'] === 'yes' ? 'Employed' : 'Unemployed' },
+                { label: 'Employment Status', value: getEmploymentStatusText(formData['employment-status']) },
                 { label: 'Years Worked', value: formData['years-worked'] || 'Not specified' },
                 { label: 'Job Title', value: formData['job-title'] || 'Not specified' },
                 { label: 'Annual Income', value: formData.income || 'Not specified' }

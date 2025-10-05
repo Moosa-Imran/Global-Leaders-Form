@@ -60,16 +60,26 @@ function generateEmailTemplate(formData, paymentInfo) {
             ? `${formData.selectedCountry.code} ${formData.phone}` 
             : formData.phone || 'Not Provided',
         highSchool: formData['high-school'] === 'yes' ? 'Yes' : 'No',
-        furtherEducation: formData['further-education'] === 'yes' ? 'Yes' : 'No',
-        educationLevel: formData['education-level'] || 'Not Specified',
+        furtherEducation: formData['high-school'] === 'no' ? 'N/A (No High School)' : (formData['further-education'] === 'yes' ? 'Yes' : 'No'),
+        educationLevel: formData['education-level'] || (formData['high-school'] === 'no' ? 'No High School Diploma' : 'Not Specified'),
         englishLevel: formData['english-level'] || 'Not Specified',
         otherLanguage: formData['other-language'] || 'None',
         otherLanguageLevel: formData['other-language-level'] || 'N/A',
-        employmentStatus: formData['employment-status'] === 'yes' ? 'Employed' : 'Unemployed',
+        employmentStatus: getEmploymentStatusText(formData['employment-status']),
         yearsWorked: formData['years-worked'] || 'Not Specified',
         jobTitle: formData['job-title'] || 'Not Specified',
         income: formData.income || 'Not Specified'
     };
+
+    // Helper function to format employment status
+    function getEmploymentStatusText(status) {
+        switch(status) {
+            case 'yes': return 'Employed';
+            case 'no': return 'Unemployed';
+            case 'no-experience': return 'No Previous Experience';
+            default: return 'Not Specified';
+        }
+    }
 
     return `
     <!DOCTYPE html>
