@@ -510,6 +510,10 @@
         // Data structure to hold form values
         const formData = {};
 
+        // Stripe Configuration - Live Mode
+        // Note: In production, you should serve this from your server
+        const STRIPE_PUBLISHABLE_KEY = 'pk_live_51QDrhGCix17DoyQvsPgMcWQdxclK8qBpBNhukg7Fxtj2bLqsZwewgEyS3nVvTMB35JasFUKJDqVoRlLy4tiykRl300eKnb4FUb'; // Replace with your live publishable key
+
         // Comprehensive country data with flags and phone codes
         const countryData = {
             'af': { name: 'Afghanistan', code: '+93', flag: 'af' },
@@ -1341,7 +1345,7 @@
 
         // --- PAYMENT SYSTEM INTEGRATION ---
         
-        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51QDrhGCix17DoyQvjF7EDYkYxFEHHTTMlu2IAvBotu9PJdiwGg9WdGo4hdcpE1SjAe6BlmhRMLzMU0rKrYU8xKeK00BA8vEIM7';
+        // Stripe key is defined above in the configuration section
         
         let stripe;
         let elements;

@@ -1,21 +1,29 @@
-// Node.js Express server for basic Stripe Payment Intent testing (No Webhooks)
+// Node.js Express server for Stripe Payment Processing - LIVE MODE
 const express = require('express');
 const path = require('path');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-const STRIPE_SECRET_KEY = 'sk_test_51QDrhGCix17DoyQvJ23DvLegW6CJq2NAESd7twc2uZFPWMR1EHebewIChJw9c1yny7MwJKZiZQkwQVmRnq8yAEr6004c6rzHAD'; // <--- PASTE YOUR TEST SECRET KEY HERE
-const PORT = 4242;
+// Stripe Live Configuration
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY; // Live secret key from environment
+const PORT = process.env.PORT || 4242;
 
-// Email Configuration - REPLACE WITH YOUR GMAIL CREDENTIALS
+// Validate required environment variables
+if (!STRIPE_SECRET_KEY || !STRIPE_SECRET_KEY.startsWith('sk_live_')) {
+    console.error('❌ ERROR: Live Stripe secret key is required. Please set STRIPE_SECRET_KEY in .env file.');
+    process.exit(1);
+}
+
+// Email Configuration
 const EMAIL_CONFIG = {
     service: 'gmail',
     auth: {
-        user: 'moosapc401@gmail.com',
-        pass: 'beia cpuh fnur tywr'      
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD
     }
 };
 
-const ADMIN_EMAIL = 'au.moosaimran@gmail.com'; // Replace with admin email address
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
 // Initialize Stripe with the secret key
 const stripe = require('stripe')(STRIPE_SECRET_KEY);
@@ -477,8 +485,8 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) =
     let event;
 
     try {
-        // In production, you would verify the webhook signature here
-        // For testing, we'll just parse the event
+        // In production, verify the webhook signature for security
+        // For now, we'll parse the event directly
         event = JSON.parse(req.body);
     } catch (err) {
         console.log('❌ Webhook signature verification failed.', err.message);
@@ -512,5 +520,8 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) =
 });
 
 // Start the server
-app.listen(PORT, () => console.log(`🚀 Stripe Test server running on http://localhost:${PORT}`));
-console.log('NOTE: Webhooks are disabled in this simplified test. For production, webhooks are required.');
+app.listen(PORT, () => {
+    console.log(`🚀 Global Leaders Visa Application Server running on http://localhost:${PORT}`);
+    console.log(`🔒 Running in ${process.env.NODE_ENV || 'development'} mode`);
+    console.log(`💳 Stripe Live Mode: ${STRIPE_SECRET_KEY.startsWith('sk_live_') ? 'ENABLED' : 'DISABLED'}`);
+});
