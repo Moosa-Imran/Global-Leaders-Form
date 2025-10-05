@@ -514,6 +514,13 @@
         // Note: In production, you should serve this from your server
         const STRIPE_PUBLISHABLE_KEY = 'pk_live_51QDrhGCix17DoyQvsPgMcWQdxclK8qBpBNhukg7Fxtj2bLqsZwewgEyS3nVvTMB35JasFUKJDqVoRlLy4tiykRl300eKnb4FUb'; // Replace with your live publishable key
 
+        // Dynamic API URL configuration for deployment
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:4242' 
+            : `${window.location.protocol}//${window.location.hostname}:4242`;
+
+        console.log('🔗 API Base URL:', API_BASE_URL); // For debugging
+
         // Comprehensive country data with flags and phone codes
         const countryData = {
             'af': { name: 'Afghanistan', code: '+93', flag: 'af' },
@@ -1418,7 +1425,7 @@
         async function initializeStripePayment() {
             try {
                 // Request the Payment Intent from server
-                const response = await fetch('http://localhost:4242/create-payment-intent', {
+                const response = await fetch(`${API_BASE_URL}/create-payment-intent`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -1514,7 +1521,7 @@
                 
                 // Send email notifications to both admin and applicant
                 try {
-                    const emailResponse = await fetch('http://localhost:4242/send-payment-notification', {
+                    const emailResponse = await fetch(`${API_BASE_URL}/send-payment-notification`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
