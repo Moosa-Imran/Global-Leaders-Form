@@ -367,8 +367,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // We use express.json() to parse incoming JSON bodies
 app.post('/create-payment-intent', express.json(), async (req, res) => {
     try {
-        // Get amount from request body, default to $50.00 for visa application
-        const { amount = 5000, formData } = req.body; // amount in cents
+        // Get amount from request body, default to $0.50 for visa application testing
+        const { amount = 50, formData } = req.body; // amount in cents
         
         console.log(`Creating PaymentIntent for $${amount / 100} - Visa Application Processing Fee`);
         if (formData) {

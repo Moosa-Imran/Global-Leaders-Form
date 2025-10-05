@@ -451,7 +451,7 @@
                     <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
                         <div class="flex items-center justify-between">
                             <span class="text-lg font-semibold text-blue-800">Processing Fee</span>
-                            <span class="text-2xl font-bold text-blue-900">$50.00</span>
+                            <span class="text-2xl font-bold text-blue-900">$0.50</span>
                         </div>
                         <p class="text-sm text-blue-600 mt-2">One-time visa application processing fee</p>
                     </div>
@@ -473,7 +473,7 @@
                             class="modern-btn w-full"
                             disabled
                         >
-                            <span id="payment-button-text">Process Payment ($50.00)</span>
+                            <span id="payment-button-text">Process Payment ($0.50)</span>
                         </button>
 
                         <!-- Display payment result message -->
@@ -1422,7 +1422,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        amount: 5000, // $50.00 in cents
+                        amount: 50, // $0.50 in cents
                         formData: formData // Send form data with payment intent
                     })
                 });
@@ -1501,7 +1501,7 @@
                 
                 // Reset button
                 submitButton.disabled = false;
-                buttonText.textContent = 'Process Payment ($50.00)';
+                buttonText.textContent = 'Process Payment ($0.50)';
                 
                 console.log('❌ Payment failed:', error.message);
             } else if (paymentIntent && paymentIntent.status === 'succeeded') {
@@ -1558,7 +1558,7 @@
                 
                 // Reset button
                 submitButton.disabled = false;
-                buttonText.textContent = 'Process Payment ($50.00)';
+                buttonText.textContent = 'Process Payment ($0.50)';
                 
                 console.log('❌ Payment not successful. Status:', paymentIntent?.status);
             }
