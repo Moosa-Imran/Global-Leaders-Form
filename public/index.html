@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Load Flag Icons for country flags -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+    <!-- Load Stripe.js V3 for payment processing -->
+    <script src="https://js.stripe.com/v3/"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
     <script>
         tailwind.config = {
@@ -309,6 +311,59 @@
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(5deg); }
         }
+        
+        /* Stripe Elements Styling */
+        .StripeElement {
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .StripeElement:focus-within {
+            border-color: #e63946;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        /* Payment section styling */
+        .payment-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Form data display styling */
+        .form-data-summary {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        
+        .data-label {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .data-value {
+            color: #6b7280;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -380,6 +435,61 @@
             <button onclick="window.location.reload()" class="modern-btn">
                 Start New Inquiry
             </button>
+        </div>
+    </div>
+
+    <!-- Payment Checkout Section -->
+    <div id="payment-section" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden">
+            <div class="grid md:grid-cols-2 gap-0">
+                <!-- Left Side - Form Data Summary -->
+                <div class="payment-section p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Application Summary</h2>
+                    <div id="form-data-display" class="space-y-4">
+                        <!-- Form data will be populated here -->
+                    </div>
+                    <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-semibold text-blue-800">Processing Fee</span>
+                            <span class="text-2xl font-bold text-blue-900">$50.00</span>
+                        </div>
+                        <p class="text-sm text-blue-600 mt-2">One-time visa application processing fee</p>
+                    </div>
+                </div>
+                
+                <!-- Right Side - Payment Form -->
+                <div class="bg-white p-8 border-l border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Secure Payment</h2>
+                    
+                    <!-- Payment Form -->
+                    <form id="payment-form" class="space-y-6">
+                        <div id="payment-element" class="StripeElement">
+                            <!-- Stripe Payment Element will be inserted here -->
+                        </div>
+
+                        <button 
+                            id="submit-payment-button"
+                            type="submit" 
+                            class="modern-btn w-full"
+                            disabled
+                        >
+                            <span id="payment-button-text">Process Payment ($50.00)</span>
+                        </button>
+
+                        <!-- Display payment result message -->
+                        <div id="payment-message" class="text-center text-sm font-medium"></div>
+                    </form>
+
+                    <div class="mt-6 flex items-center justify-center space-x-4 text-gray-400">
+                        <i class="fa-solid fa-lock text-lg"></i>
+                        <span class="text-sm">Secured by Stripe</span>
+                    </div>
+                    
+                    <button onclick="cancelPayment()" class="w-full mt-4 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel and Return
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1188,22 +1298,18 @@
             
             setTimeout(() => {
                 if (validateStep(currentStep, true)) { // Show errors when submitting
-                    // In a real application, you would send the `formData` object to a server here.
-                    console.log("--- FINAL FORM DATA ---");
+                    // Store all form data including optional fields
+                    console.log("--- FORM DATA COLLECTED ---");
                     console.log(formData);
-                    console.log("-----------------------");
+                    console.log("--------------------------");
 
-                    // Show the success modal with animation
-                    if (window.showSuccessModal) {
-                        window.showSuccessModal();
-                    } else {
-                        successModal.classList.remove('hidden');
-                    }
+                    // Show payment section instead of success modal
+                    showPaymentSection();
+                } else {
+                    // Remove loading state if validation fails
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
                 }
-                
-                // Remove loading state
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
             }, 1000);
         }
 
@@ -1232,6 +1338,234 @@
                 }, 10);
             };
         });
+
+        // --- PAYMENT SYSTEM INTEGRATION ---
+        
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51QDrhGCix17DoyQvjF7EDYkYxFEHHTTMlu2IAvBotu9PJdiwGg9WdGo4hdcpE1SjAe6BlmhRMLzMU0rKrYU8xKeK00BA8vEIM7';
+        
+        let stripe;
+        let elements;
+        
+        // Initialize Stripe
+        try {
+            stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        } catch (e) {
+            console.error('Error initializing Stripe:', e);
+        }
+
+        /**
+         * Displays form data summary and shows payment section
+         */
+        function showPaymentSection() {
+            // Display form data summary
+            displayFormDataSummary();
+            
+            // Show payment section
+            document.getElementById('payment-section').classList.remove('hidden');
+            
+            // Initialize Stripe payment elements
+            initializeStripePayment();
+        }
+
+        /**
+         * Displays all collected form data in a summary format
+         */
+        function displayFormDataSummary() {
+            const displayContainer = document.getElementById('form-data-display');
+            
+            const summaryData = [
+                { label: 'Gender', value: formData.gender || 'Not specified' },
+                { label: 'Nationality', value: formData.selectedCountry ? formData.selectedCountry.name : 'Not specified' },
+                { label: 'Date of Birth', value: `${formData['dob-month']}/${formData['dob-day']}/${formData['dob-year']}` || 'Not specified' },
+                { label: 'Application Type', value: formData['application-type'] || 'Not specified' },
+                { label: 'Marital Status', value: formData.married === 'yes' ? 'Married' : 'Single' },
+                { label: 'Email', value: formData.email || 'Not specified' },
+                { label: 'Phone', value: `${formData.selectedCountry ? formData.selectedCountry.code : ''} ${formData.phone}` || 'Not specified' },
+                { label: 'High School Graduate', value: formData['high-school'] === 'yes' ? 'Yes' : 'No' },
+                { label: 'Further Education', value: formData['further-education'] === 'yes' ? 'Yes' : 'No' },
+                { label: 'Education Level', value: formData['education-level'] || 'Not specified' },
+                { label: 'English Level', value: formData['english-level'] || 'Not specified' },
+                { label: 'Other Language', value: formData['other-language'] || 'None specified' },
+                { label: 'Other Language Level', value: formData['other-language-level'] || 'N/A' },
+                { label: 'Employment Status', value: formData['employment-status'] === 'yes' ? 'Employed' : 'Unemployed' },
+                { label: 'Years Worked', value: formData['years-worked'] || 'Not specified' },
+                { label: 'Job Title', value: formData['job-title'] || 'Not specified' },
+                { label: 'Annual Income', value: formData.income || 'Not specified' }
+            ];
+
+            let summaryHTML = '';
+            summaryData.forEach(item => {
+                if (item.value && item.value !== 'Not specified' && item.value !== 'N/A') {
+                    summaryHTML += `
+                        <div class="data-row">
+                            <span class="data-label">${item.label}:</span>
+                            <span class="data-value">${item.value}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            displayContainer.innerHTML = `<div class="form-data-summary">${summaryHTML}</div>`;
+        }
+
+        /**
+         * Initialize Stripe payment elements
+         */
+        async function initializeStripePayment() {
+            try {
+                // Request the Payment Intent from server
+                const response = await fetch('http://localhost:4242/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        amount: 5000, // $50.00 in cents
+                        formData: formData // Send form data with payment intent
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to create payment intent.');
+                }
+
+                const { clientSecret } = await response.json();
+
+                if (clientSecret) {
+                    const appearance = { 
+                        theme: 'stripe',
+                        variables: {
+                            colorPrimary: '#e63946',
+                            borderRadius: '12px'
+                        }
+                    };
+                    
+                    elements = stripe.elements({ appearance, clientSecret });
+                    
+                    const paymentElement = elements.create('payment');
+                    paymentElement.mount('#payment-element');
+                    
+                    // Enable the payment button
+                    document.getElementById('submit-payment-button').disabled = false;
+                } else {
+                    throw new Error('Server did not return a valid client secret.');
+                }
+
+            } catch (error) {
+                const paymentMessage = document.getElementById('payment-message');
+                paymentMessage.classList.add('text-red-600');
+                paymentMessage.textContent = `Setup Error: ${error.message}`;
+                console.error('Payment initialization error:', error);
+            }
+        }
+
+        /**
+         * Handle payment form submission
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const paymentForm = document.getElementById('payment-form');
+            if (paymentForm) {
+                paymentForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await handlePaymentSubmission();
+                });
+            }
+        });
+
+        async function handlePaymentSubmission() {
+            const submitButton = document.getElementById('submit-payment-button');
+            const buttonText = document.getElementById('payment-button-text');
+            const paymentMessage = document.getElementById('payment-message');
+            
+            // Set loading state
+            submitButton.disabled = true;
+            buttonText.textContent = 'Processing Payment...';
+
+            // Confirm the payment
+            const { error, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.href,
+                },
+                redirect: 'if_required',
+            });
+
+            if (error) {
+                // Show error message
+                paymentMessage.classList.remove('text-green-600');
+                paymentMessage.classList.add('text-red-600');
+                paymentMessage.textContent = error.message;
+                
+                // Reset button
+                submitButton.disabled = false;
+                buttonText.textContent = 'Process Payment ($50.00)';
+                
+                console.log('❌ Payment failed:', error.message);
+            } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+                // Payment successful - now send email notifications
+                paymentMessage.classList.remove('text-red-600');
+                paymentMessage.classList.add('text-green-600');
+                paymentMessage.textContent = 'Payment Successful! Sending confirmation emails...';
+                
+                console.log('✅ Payment succeeded! Payment Intent ID:', paymentIntent.id);
+                
+                // Send email notifications to both admin and applicant
+                try {
+                    const emailResponse = await fetch('http://localhost:4242/send-payment-notification', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            paymentIntentId: paymentIntent.id,
+                            formData: formData
+                        })
+                    });
+
+                    if (emailResponse.ok) {
+                        const emailResult = await emailResponse.json();
+                        console.log('📧 Email notifications processed:', emailResult);
+                        paymentMessage.textContent = 'Payment Successful! Confirmation emails sent to you and our team.';
+                    } else if (emailResponse.status === 207) {
+                        // Partial success (some emails sent, some failed)
+                        const emailResult = await emailResponse.json();
+                        console.log('📧 Partial email success:', emailResult);
+                        paymentMessage.textContent = 'Payment Successful! Some confirmation emails sent.';
+                    } else {
+                        console.error('📧 Failed to send email notifications');
+                        paymentMessage.textContent = 'Payment Successful! (Email notifications failed)';
+                    }
+                } catch (emailError) {
+                    console.error('📧 Error sending email notifications:', emailError);
+                    paymentMessage.textContent = 'Payment Successful! (Email notifications failed)';
+                }
+                
+                // Hide payment section and show success after delay
+                setTimeout(() => {
+                    document.getElementById('payment-section').classList.add('hidden');
+                    if (window.showSuccessModal) {
+                        window.showSuccessModal();
+                    } else {
+                        document.getElementById('success-modal').classList.remove('hidden');
+                    }
+                }, 2000);
+            } else {
+                // Payment status is not succeeded
+                paymentMessage.classList.remove('text-green-600');
+                paymentMessage.classList.add('text-red-600');
+                paymentMessage.textContent = 'Payment was not completed successfully.';
+                
+                // Reset button
+                submitButton.disabled = false;
+                buttonText.textContent = 'Process Payment ($50.00)';
+                
+                console.log('❌ Payment not successful. Status:', paymentIntent?.status);
+            }
+        }
+
+        /**
+         * Cancel payment and return to form
+         */
+        function cancelPayment() {
+            document.getElementById('payment-section').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
