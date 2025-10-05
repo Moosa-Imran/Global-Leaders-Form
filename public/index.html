@@ -605,98 +605,96 @@
         }
         
         @media (max-width: 768px) {
-            .payment-modal {
-                max-height: 95vh;
-                margin: 5px;
-                max-width: calc(100vw - 10px);
-                border-radius: 12px;
+            /* Inline payment section styles */
+            #payment-section {
+                margin: 1rem 0.5rem !important;
+                max-width: calc(100vw - 1rem) !important;
             }
             
-            .payment-modal .grid {
+            #payment-section .grid {
                 grid-template-columns: 1fr !important;
                 gap: 0 !important;
             }
             
-            .payment-modal .p-8 {
+            #payment-section .p-8 {
                 padding: 1rem !important;
             }
             
-            .payment-modal h2 {
+            #payment-section h2 {
                 font-size: 1.25rem !important;
                 margin-bottom: 1rem !important;
             }
             
-            .payment-modal .space-y-6 > * + * {
+            #payment-section .space-y-6 > * + * {
                 margin-top: 1rem !important;
             }
             
-            .payment-modal .space-y-4 > * + * {
+            #payment-section .space-y-4 > * + * {
                 margin-top: 0.75rem !important;
             }
             
             /* Make payment form smaller on mobile */
-            .payment-modal .bg-blue-50 {
+            #payment-section .bg-blue-50 {
                 padding: 0.75rem !important;
                 margin-top: 1rem !important;
             }
             
-            .payment-modal .text-2xl {
+            #payment-section .text-2xl {
                 font-size: 1.125rem !important;
             }
             
-            .payment-modal .text-lg {
+            #payment-section .text-lg {
                 font-size: 1rem !important;
             }
             
-            .payment-modal .text-sm {
+            #payment-section .text-sm {
                 font-size: 0.875rem !important;
             }
             
             /* Enable zoom and prevent zoom disable */
-            .payment-modal * {
+            #payment-section * {
                 touch-action: manipulation;
             }
         }
         
         @media (max-width: 480px) {
-            .payment-modal {
-                margin: 2px;
-                max-width: calc(100vw - 4px);
-                border-radius: 8px;
-                max-height: 98vh;
+            #payment-section {
+                margin: 0.5rem 0.25rem !important;
+                max-width: calc(100vw - 0.5rem) !important;
+                border-radius: 12px;
             }
             
-            .payment-modal .p-8 {
+            #payment-section .p-8 {
                 padding: 0.75rem !important;
             }
             
-            .payment-modal h2 {
+            #payment-section h2 {
                 font-size: 1.125rem !important;
                 margin-bottom: 0.75rem !important;
             }
             
-            .payment-modal .space-y-6 > * + * {
+            #payment-section .space-y-6 > * + * {
                 margin-top: 0.75rem !important;
             }
             
-            .payment-modal .space-y-4 > * + * {
+            #payment-section .space-y-4 > * + * {
                 margin-top: 0.5rem !important;
             }
             
-            .payment-modal .bg-blue-50 {
+            #payment-section .bg-blue-50 {
                 padding: 0.5rem !important;
                 margin-top: 0.75rem !important;
             }
             
-            .payment-modal .mt-8 {
+            #payment-section .mt-8 {
                 margin-top: 0.75rem !important;
             }
             
-            .payment-modal .mt-6 {
+            #payment-section .mt-6 {
                 margin-top: 0.5rem !important;
             }
             
-            .payment-modal .mt-4 {
+            #payment-section .mt-4 {
                 margin-top: 0.5rem !important;
             }
         }
@@ -890,6 +888,88 @@
                 min-height: 48px !important;
             }
         }
+
+        /* Mobile responsive styles for Step 6 - Visa & Country Selection */
+        @media (max-width: 768px) {
+            /* Visa type buttons grid responsive */
+            #visa-type {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem !important;
+            }
+            
+            /* Country selector styling */
+            #country-selector {
+                font-size: 0.875rem !important;
+                padding: 0.75rem !important;
+            }
+            
+            /* Selected countries container */
+            #selected-countries {
+                min-height: 80px !important;
+                padding: 0.75rem !important;
+            }
+            
+            /* Country tags - make them responsive */
+            #selected-countries .inline-flex {
+                margin-right: 0.5rem !important;
+                margin-bottom: 0.5rem !important;
+                padding: 0.5rem 0.75rem !important;
+                font-size: 0.875rem !important;
+            }
+            
+            /* Country flag spacing */
+            #selected-countries .fi {
+                margin-right: 0.5rem !important;
+            }
+            
+            /* Remove button in country tags */
+            #selected-countries button {
+                margin-left: 0.5rem !important;
+                min-width: 24px !important;
+                min-height: 24px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Extra small screens - single column visa types */
+            #visa-type {
+                grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+            }
+            
+            /* Smaller visa type buttons */
+            #visa-type .toggle-btn {
+                padding: 0.75rem !important;
+                font-size: 0.875rem !important;
+            }
+            
+            /* Country selector adjustments */
+            #country-selector {
+                font-size: 0.8rem !important;
+                padding: 0.625rem !important;
+            }
+            
+            /* Compact country tags */
+            #selected-countries .inline-flex {
+                margin-right: 0.25rem !important;
+                margin-bottom: 0.25rem !important;
+                padding: 0.375rem 0.5rem !important;
+                font-size: 0.75rem !important;
+            }
+            
+            /* Smaller country flags */
+            #selected-countries .fi {
+                font-size: 0.875rem !important;
+                margin-right: 0.375rem !important;
+            }
+            
+            /* Ensure country tags wrap properly */
+            #selected-countries {
+                min-height: 60px !important;
+                padding: 0.5rem !important;
+                line-height: 1.2 !important;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-1 md:p-4">
@@ -950,23 +1030,9 @@
         <!-- Dots will be generated here by JavaScript -->
     </div>
 
-    <!-- Hidden Submission Success Modal (Instead of an alert) -->
-    <div id="success-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-12 rounded-2xl shadow-2xl max-w-md text-center transform transition-all duration-300 scale-95">
-            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-circle-check text-green-500 text-4xl"></i>
-            </div>
-            <h3 class="text-3xl font-bold text-gray-800 mb-4">Success!</h3>
-            <p class="text-gray-600 text-lg mb-8 leading-relaxed">Thank you for submitting your visa inquiry. Our expert consultants will review your information and contact you within 24 hours.</p>
-            <button onclick="window.location.reload()" class="modern-btn">
-                Start New Inquiry
-            </button>
-        </div>
-    </div>
-
-    <!-- Payment Checkout Section -->
-    <div id="payment-section" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden payment-modal">
+    <!-- Inline Payment Checkout Section -->
+    <div id="payment-section" class="hidden w-full max-w-6xl mx-auto mt-8 mb-8">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
             <div class="grid md:grid-cols-2 gap-0">
                 <!-- Left Side - Form Data Summary -->
                 <div class="payment-section p-8">
@@ -1019,11 +1085,25 @@
         </div>
     </div>
 
+    <!-- Hidden Submission Success Modal (Instead of an alert) -->
+    <div id="success-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white p-12 rounded-2xl shadow-2xl max-w-md text-center transform transition-all duration-300 scale-95">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-circle-check text-green-500 text-4xl"></i>
+            </div>
+            <h3 class="text-3xl font-bold text-gray-800 mb-4">Success!</h3>
+            <p class="text-gray-600 text-lg mb-8 leading-relaxed">Thank you for submitting your visa inquiry. Our expert consultants will review your information and contact you within 24 hours.</p>
+            <button onclick="window.location.reload()" class="modern-btn">
+                Start New Inquiry
+            </button>
+        </div>
+    </div>
+
 
     <script>
         // Global state and configuration
         let currentStep = 1;
-        const totalSteps = 5;
+        const totalSteps = 6;
         const formContainer = document.getElementById('step-container');
         const progressDots = document.getElementById('progress-dots');
         const nextButton = document.getElementById('next-button');
@@ -1403,7 +1483,7 @@
                 `,
                 fields: ['english-level']
             },
-            { // Step 5: Employment Status (Final Step)
+            { // Step 5: Employment Status
                 id: 5,
                 title: "Employment Status",
                 subtitle: "We need this information for a complete assessment.",
@@ -1465,6 +1545,69 @@
                     </div>
                 `,
                 fields: ['employment-status', 'years-worked', 'job-title', 'income']
+            },
+            { // Step 6: Visa & Country Preferences (Final Step)
+                id: 6,
+                title: "Visa & Destination",
+                subtitle: "Tell us which countries interest you and what type of application you're seeking.",
+                icon: '<i class="fa-solid fa-globe text-8xl"></i>',
+                html: `
+                    <div class="space-y-8 step-content">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">What Are You Applying For?</h3>
+                            <div id="visa-type" class="grid grid-cols-2 gap-4">
+                                <button type="button" data-value="visit-visa" onclick="handleToggle(this, 'visa-type', 6)" class="toggle-btn">
+                                    <i class="fa-solid fa-plane mb-2 text-lg"></i>
+                                    <div>Visit Visa</div>
+                                </button>
+                                <button type="button" data-value="study-visa" onclick="handleToggle(this, 'visa-type', 6)" class="toggle-btn">
+                                    <i class="fa-solid fa-graduation-cap mb-2 text-lg"></i>
+                                    <div>Study Visa</div>
+                                </button>
+                                <button type="button" data-value="work-permit" onclick="handleToggle(this, 'visa-type', 6)" class="toggle-btn">
+                                    <i class="fa-solid fa-briefcase mb-2 text-lg"></i>
+                                    <div>Work Permit</div>
+                                </button>
+                                <button type="button" data-value="permanent-residence" onclick="handleToggle(this, 'visa-type', 6)" class="toggle-btn">
+                                    <i class="fa-solid fa-home mb-2 text-lg"></i>
+                                    <div>Permanent Residence</div>
+                                </button>
+                                <button type="button" data-value="business-visa" onclick="handleToggle(this, 'visa-type', 6)" class="toggle-btn">
+                                    <i class="fa-solid fa-handshake mb-2 text-lg"></i>
+                                    <div>Business Visa</div>
+                                </button>
+                                <button type="button" data-value="family-sponsorship" onclick="handleToggle(this, 'visa-type', 6)" class="toggle-btn">
+                                    <i class="fa-solid fa-users mb-2 text-lg"></i>
+                                    <div>Family Sponsorship</div>
+                                </button>
+                            </div>
+                            <input type="hidden" id="visa-type-input" name="visa-type" required>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Which Countries Are You Interested In?</h3>
+                            <p class="text-sm text-gray-600 mb-4">You can select multiple countries. Click to add or remove from your list.</p>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Select Countries</label>
+                                    <select id="country-selector" class="form-select w-full p-4 rounded-xl text-base">
+                                        <option value="" disabled selected>Choose a country to add</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="selected-countries" class="min-h-[100px] p-4 border-2 border-gray-200 rounded-xl bg-gray-50">
+                                    <div class="text-gray-500 text-center py-4" id="no-countries-message">
+                                        No countries selected yet. Use the dropdown above to add countries.
+                                    </div>
+                                </div>
+                                
+                                <input type="hidden" id="interested-countries" name="interested-countries" required>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                fields: ['visa-type', 'interested-countries']
             }
         ];
 
@@ -1542,6 +1685,13 @@
                             nationalitySelect.value = formData.nationality;
                         }
                     }
+                }, 100);
+            }
+            
+            // Initialize country selector for step 6
+            if (currentStep === 6) {
+                setTimeout(() => {
+                    initializeCountrySelector();
                 }, 100);
             }
         }
@@ -1733,6 +1883,119 @@
             validateStep(1, false);
         }
 
+        // Global array to store selected countries
+        let selectedCountries = [];
+
+        /**
+         * Initializes the country selector dropdown for step 6
+         */
+        function initializeCountrySelector() {
+            const countrySelector = document.getElementById('country-selector');
+            if (!countrySelector) return;
+
+            // Populate the dropdown with countries
+            countrySelector.innerHTML = '<option value="" disabled selected>Choose a country to add</option>';
+            
+            // Sort countries alphabetically
+            const sortedCountries = Object.entries(countryData).sort((a, b) => 
+                a[1].name.localeCompare(b[1].name)
+            );
+            
+            sortedCountries.forEach(([code, data]) => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = data.name;
+                option.setAttribute('data-flag', data.flag);
+                countrySelector.appendChild(option);
+            });
+
+            // Add event listener for country selection
+            countrySelector.addEventListener('change', function() {
+                if (this.value) {
+                    addCountry(this.value);
+                    this.value = ''; // Reset dropdown
+                }
+            });
+
+            // Restore previously selected countries if any
+            if (formData['interested-countries']) {
+                selectedCountries = formData['interested-countries'].split(',').filter(c => c);
+                updateSelectedCountriesDisplay();
+            }
+        }
+
+        /**
+         * Adds a country to the selected list
+         */
+        function addCountry(countryCode) {
+            if (!selectedCountries.includes(countryCode)) {
+                selectedCountries.push(countryCode);
+                updateSelectedCountriesDisplay();
+                updateCountriesFormData();
+                validateStep(6, false);
+            }
+        }
+
+        /**
+         * Removes a country from the selected list
+         */
+        function removeCountry(countryCode) {
+            selectedCountries = selectedCountries.filter(code => code !== countryCode);
+            updateSelectedCountriesDisplay();
+            updateCountriesFormData();
+            validateStep(6, false);
+        }
+
+        /**
+         * Updates the visual display of selected countries
+         */
+        function updateSelectedCountriesDisplay() {
+            const container = document.getElementById('selected-countries');
+            const noCountriesMessage = document.getElementById('no-countries-message');
+            
+            if (!container) return;
+
+            if (selectedCountries.length === 0) {
+                container.innerHTML = '<div class="text-gray-500 text-center py-4" id="no-countries-message">No countries selected yet. Use the dropdown above to add countries.</div>';
+                return;
+            }
+
+            // Hide the no countries message
+            if (noCountriesMessage) {
+                noCountriesMessage.style.display = 'none';
+            }
+
+            // Create country tags
+            const countriesHTML = selectedCountries.map(countryCode => {
+                const country = countryData[countryCode];
+                if (!country) return '';
+                
+                return `
+                    <div class="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-2 rounded-full mr-2 mb-2">
+                        <span class="fi fi-${country.flag} mr-2"></span>
+                        <span class="font-medium">${country.name}</span>
+                        <button type="button" onclick="removeCountry('${countryCode}')" 
+                                class="ml-2 text-blue-600 hover:text-blue-800 focus:outline-none">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = countriesHTML;
+        }
+
+        /**
+         * Updates the hidden form input with selected countries
+         */
+        function updateCountriesFormData() {
+            const hiddenInput = document.getElementById('interested-countries');
+            if (hiddenInput) {
+                hiddenInput.value = selectedCountries.join(',');
+                formData['interested-countries'] = hiddenInput.value;
+            }
+        }
+
         /**
          * Calculates age from date of birth and validates if user is 18+
          * @returns {boolean} True if user is 18 or older, false otherwise
@@ -1911,6 +2174,34 @@
                     formData['other-language-level'] = otherLangLevel;
                 }
             }
+            
+            // Special validation for step 6 - visa type and countries
+            if (stepNumber === 6) {
+                const visaType = document.querySelector('[name="visa-type"]')?.value.trim();
+                const interestedCountries = document.querySelector('[name="interested-countries"]')?.value.trim();
+                
+                if (!visaType) {
+                    isValid = false;
+                    if (showErrors) {
+                        errorMessage = 'Please select what you are applying for.';
+                    }
+                }
+                
+                if (!interestedCountries || selectedCountries.length === 0) {
+                    isValid = false;
+                    if (showErrors) {
+                        errorMessage = 'Please select at least one country you are interested in.';
+                    }
+                }
+                
+                // Save the data if valid
+                if (visaType) {
+                    formData['visa-type'] = visaType;
+                }
+                if (interestedCountries) {
+                    formData['interested-countries'] = interestedCountries;
+                }
+            }
 
             // Update error message display only if showErrors is true
             if (!isValid && errorMessage && showErrors) {
@@ -2018,11 +2309,21 @@
          * Displays form data summary and shows payment section
          */
         function showPaymentSection() {
+            // Hide the main form
+            document.getElementById('visa-form-card').style.display = 'none';
+            
+            // Hide progress dots
+            document.getElementById('progress-dots').style.display = 'none';
+            
             // Display form data summary
             displayFormDataSummary();
             
-            // Show payment section
-            document.getElementById('payment-section').classList.remove('hidden');
+            // Show payment section with smooth animation
+            const paymentSection = document.getElementById('payment-section');
+            paymentSection.classList.remove('hidden');
+            
+            // Smooth scroll to payment section
+            paymentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
             // Initialize Stripe payment elements
             initializeStripePayment();
@@ -2085,13 +2386,21 @@
          */
         async function initializeStripePayment() {
             try {
+                // Create essential data only for payment intent (to avoid metadata size limit)
+                const essentialData = {
+                    name: formData['full-name'] || 'Unknown',
+                    email: formData.email || 'Unknown',
+                    visaType: formData['visa-type'] || 'Unknown',
+                    nationality: formData.selectedCountry?.name || 'Unknown'
+                };
+
                 // Request the Payment Intent from server
                 const response = await fetch('https://form.globalleaders.ca/create-payment-intent', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         amount: 50, // $0.50 in cents
-                        formData: formData // Send form data with payment intent
+                        essentialData: essentialData // Send only essential data for metadata
                     })
                 });
 
@@ -2236,7 +2545,17 @@
          * Cancel payment and return to form
          */
         function cancelPayment() {
+            // Hide payment section
             document.getElementById('payment-section').classList.add('hidden');
+            
+            // Show the main form again
+            document.getElementById('visa-form-card').style.display = 'flex';
+            
+            // Show progress dots
+            document.getElementById('progress-dots').style.display = 'flex';
+            
+            // Scroll back to the form
+            document.getElementById('visa-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     </script>
 </body>

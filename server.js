@@ -68,7 +68,9 @@ function generateEmailTemplate(formData, paymentInfo) {
         employmentStatus: getEmploymentStatusText(formData['employment-status']),
         yearsWorked: formData['years-worked'] || 'Not Specified',
         jobTitle: formData['job-title'] || 'Not Specified',
-        income: formData.income || 'Not Specified'
+        income: formData.income || 'Not Specified',
+        visaType: getVisaTypeText(formData['visa-type']),
+        interestedCountries: formatInterestedCountries(formData['interested-countries'])
     };
 
     // Helper function to format employment status
@@ -79,6 +81,43 @@ function generateEmailTemplate(formData, paymentInfo) {
             case 'no-experience': return 'No Previous Experience';
             default: return 'Not Specified';
         }
+    }
+
+    // Helper function to format visa type
+    function getVisaTypeText(type) {
+        switch(type) {
+            case 'visit-visa': return 'Visit Visa';
+            case 'study-visa': return 'Study Visa';
+            case 'work-permit': return 'Work Permit';
+            case 'permanent-residence': return 'Permanent Residence';
+            case 'business-visa': return 'Business Visa';
+            case 'family-sponsorship': return 'Family Sponsorship';
+            default: return 'Not Specified';
+        }
+    }
+
+    // Helper function to format interested countries
+    function formatInterestedCountries(countriesString) {
+        if (!countriesString) return 'None Selected';
+        
+        // Define country mapping (subset of the most common countries)
+        const countryNames = {
+            'au': 'Australia', 'ca': 'Canada', 'us': 'United States', 'gb': 'United Kingdom',
+            'de': 'Germany', 'fr': 'France', 'it': 'Italy', 'es': 'Spain', 'nl': 'Netherlands',
+            'be': 'Belgium', 'ch': 'Switzerland', 'at': 'Austria', 'se': 'Sweden', 'no': 'Norway',
+            'dk': 'Denmark', 'fi': 'Finland', 'ie': 'Ireland', 'nz': 'New Zealand', 'sg': 'Singapore',
+            'hk': 'Hong Kong', 'jp': 'Japan', 'kr': 'South Korea', 'ae': 'United Arab Emirates',
+            'in': 'India', 'pk': 'Pakistan', 'bd': 'Bangladesh', 'lk': 'Sri Lanka', 'sa': 'Saudi Arabia',
+            'za': 'South Africa', 'ng': 'Nigeria', 'eg': 'Egypt', 'ma': 'Morocco', 'br': 'Brazil',
+            'ar': 'Argentina', 'cl': 'Chile', 'mx': 'Mexico', 'cn': 'China', 'ru': 'Russia'
+        };
+        
+        const countryCodes = countriesString.split(',').filter(code => code.trim());
+        const countryNamesList = countryCodes.map(code => 
+            countryNames[code.trim()] || code.trim().toUpperCase()
+        );
+        
+        return countryNamesList.join(', ');
     }
 
     return `
@@ -168,6 +207,13 @@ function generateEmailTemplate(formData, paymentInfo) {
                     <tr><th>Years of Experience</th><td>${applicantInfo.yearsWorked}</td></tr>
                     <tr><th>Job Title</th><td>${applicantInfo.jobTitle}</td></tr>
                     <tr><th>Annual Income</th><td>${applicantInfo.income}</td></tr>
+                </table>
+
+                <!-- Visa & Destination Preferences -->
+                <div class="section-title">🌍 Visa & Destination Preferences</div>
+                <table class="data-table">
+                    <tr><th>Application Type</th><td>${applicantInfo.visaType}</td></tr>
+                    <tr><th>Interested Countries</th><td>${applicantInfo.interestedCountries}</td></tr>
                 </table>
 
                 <!-- Next Steps -->
@@ -271,6 +317,14 @@ function generateApplicantEmailTemplate(formData, paymentInfo) {
                     <div class="detail-row">
                         <span class="detail-label">Application Type:</span>
                         <span class="detail-value">${formData['application-type'] || 'Standard'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Visa Type:</span>
+                        <span class="detail-value">${getVisaTypeText(formData['visa-type'])}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Interested Countries:</span>
+                        <span class="detail-value">${formatInterestedCountries(formData['interested-countries'])}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Nationality:</span>
@@ -377,22 +431,33 @@ app.use(express.static(path.join(__dirname, 'public')));
 // We use express.json() to parse incoming JSON bodies
 app.post('/create-payment-intent', express.json(), async (req, res) => {
     try {
-        // Get amount from request body, default to $0.50 for visa application testing
-        const { amount = 50, formData } = req.body; // amount in cents
+        // Get amount and essential data from request body
+        const { amount = 50, essentialData } = req.body; // amount in cents
         
         console.log(`Creating PaymentIntent for $${amount / 100} - Visa Application Processing Fee`);
-        if (formData) {
-            console.log('Form data received:', formData);
+        if (essentialData) {
+            console.log('Essential data received:', essentialData);
         }
+
+        // Create very compact metadata with only essential info
+        const compactMetadata = {
+            service: 'visa_app',
+            name: (essentialData?.name || 'Unknown').substring(0, 30),
+            email: (essentialData?.email || 'Unknown').substring(0, 40),
+            visa: (essentialData?.visaType || 'Unknown').substring(0, 15),
+            country: (essentialData?.nationality || 'Unknown').substring(0, 20)
+        };
+
+        // Debug: Check metadata size
+        const metadataString = JSON.stringify(compactMetadata);
+        console.log('Metadata size:', metadataString.length, 'characters');
+        console.log('Metadata content:', metadataString);
 
         const paymentIntent = await stripe.paymentIntents.create({
             amount: amount,
             currency: 'usd',
             description: 'Global Leaders Visa Application Processing Fee',
-            metadata: {
-                service: 'visa_application',
-                form_data: formData ? JSON.stringify(formData) : 'No form data'
-            },
+            metadata: compactMetadata,
             // Stripe enables dynamic payment methods by default
             automatic_payment_methods: {
                 enabled: true,
@@ -508,9 +573,15 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) =
         const paymentIntent = event.data.object;
         console.log('💰 Payment succeeded!', paymentIntent.id);
         
-        // Extract form data from metadata
-        const formData = paymentIntent.metadata.form_data ? 
-            JSON.parse(paymentIntent.metadata.form_data) : {};
+        // Create basic form data from metadata for email notification
+        const formData = {
+            'full-name': paymentIntent.metadata.name || 'Unknown',
+            'email': paymentIntent.metadata.email || 'Unknown',
+            'visa-type': paymentIntent.metadata.visa || 'Unknown',
+            'selectedCountry': { name: paymentIntent.metadata.country || 'Unknown' }
+        };
+        
+        console.log('📋 Using basic form data from metadata for webhook notification');
         
         // Send admin notification email
         const emailResult = await sendAdminNotification(formData, {
