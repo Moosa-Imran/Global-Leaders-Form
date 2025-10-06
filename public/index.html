@@ -1526,8 +1526,17 @@
                         </div>
                         
                         <div>
-                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Other Language Skills</h3>
-                            <div class="space-y-4">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Do You Speak Another Language?</h3>
+                            <div class="flex items-center space-x-3 mb-6">
+                                <input type="checkbox" id="has-other-language" name="has-other-language" 
+                                       onchange="toggleOtherLanguageFields(this.checked)" 
+                                       class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                                <label for="has-other-language" class="text-base font-medium text-gray-700">
+                                    Yes, I speak another language
+                                </label>
+                            </div>
+                            
+                            <div id="other-language-section" class="space-y-4 hidden">
                                 <div class="input-group">
                                     <input type="text" id="other-language" name="other-language" placeholder=" " oninput="validateStep(4, false)"
                                            class="form-input w-full p-4 rounded-xl text-base">
@@ -1559,7 +1568,7 @@
                         </div>
                     </div>
                 `,
-                fields: ['english-level']
+                fields: ['english-level', 'has-other-language']
             },
             { // Step 5: Employment Status
                 id: 5,
@@ -1762,6 +1771,39 @@
                         // Restore selected value if exists
                         if (formData.nationality) {
                             nationalitySelect.value = formData.nationality;
+                        }
+                    }
+                }, 100);
+            }
+            
+            // Restore language checkbox state for step 4
+            if (currentStep === 4) {
+                setTimeout(() => {
+                    const hasOtherLanguageCheckbox = document.getElementById('has-other-language');
+                    if (hasOtherLanguageCheckbox && formData['has-other-language'] === 'yes') {
+                        hasOtherLanguageCheckbox.checked = true;
+                        toggleOtherLanguageFields(true);
+                        
+                        // Restore other language values if they exist
+                        if (formData['other-language']) {
+                            const otherLanguageInput = document.getElementById('other-language');
+                            if (otherLanguageInput) {
+                                otherLanguageInput.value = formData['other-language'];
+                            }
+                        }
+                        
+                        if (formData['other-language-level']) {
+                            const otherLanguageLevelInput = document.getElementById('other-language-level-input');
+                            if (otherLanguageLevelInput) {
+                                otherLanguageLevelInput.value = formData['other-language-level'];
+                                // Re-activate the corresponding button
+                                const buttonContainer = document.getElementById('other-language-level');
+                                if (buttonContainer) {
+                                    buttonContainer.querySelectorAll('.toggle-btn').forEach(btn => {
+                                        btn.classList.toggle('active', btn.getAttribute('data-value') === formData['other-language-level']);
+                                    });
+                                }
+                            }
                         }
                     }
                 }, 100);
@@ -2076,6 +2118,39 @@
         }
 
         /**
+         * Toggles the visibility of other language fields based on checkbox
+         */
+        function toggleOtherLanguageFields(isChecked) {
+            const otherLanguageSection = document.getElementById('other-language-section');
+            const otherLanguageInput = document.getElementById('other-language');
+            const otherLanguageLevelInput = document.getElementById('other-language-level-input');
+            
+            if (isChecked) {
+                otherLanguageSection.classList.remove('hidden');
+                formData['has-other-language'] = 'yes';
+            } else {
+                otherLanguageSection.classList.add('hidden');
+                // Clear the other language fields when hiding
+                if (otherLanguageInput) {
+                    otherLanguageInput.value = '';
+                }
+                if (otherLanguageLevelInput) {
+                    otherLanguageLevelInput.value = '';
+                }
+                // Clear any active toggle buttons
+                const toggleButtons = document.querySelectorAll('#other-language-level .toggle-btn');
+                toggleButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Clear form data
+                formData['has-other-language'] = 'no';
+                delete formData['other-language'];
+                delete formData['other-language-level'];
+            }
+            
+            validateStep(4, false);
+        }
+
+        /**
          * Calculates age from date of birth and validates if user is 18+
          * @returns {boolean} True if user is 18 or older, false otherwise
          */
@@ -2223,34 +2298,38 @@
                 }
             });
 
-            // Special validation for step 4 - other language fields (optional but linked)
+            // Special validation for step 4 - other language fields (conditional based on checkbox)
             if (stepNumber === 4) {
+                const hasOtherLanguage = document.querySelector('[name="has-other-language"]')?.checked;
                 const otherLang = document.querySelector('[name="other-language"]')?.value.trim();
                 const otherLangLevel = document.querySelector('[name="other-language-level"]')?.value.trim();
                 
-                // If user entered a language, they must select proficiency level
-                if (otherLang && !otherLangLevel) {
-                    isValid = false;
-                    if (showErrors) {
-                        errorMessage = 'Please select your proficiency level for the language you entered.';
-                    }
-                }
-                // If user selected proficiency but no language, require language
-                else if (!otherLang && otherLangLevel) {
-                    isValid = false;
-                    if (showErrors) {
-                        errorMessage = 'Please enter the language name for the proficiency level you selected.';
-                    }
-                }
+                // Save checkbox state
+                formData['has-other-language'] = hasOtherLanguage ? 'yes' : 'no';
                 
-                // Save the optional language data if both are provided
-                if (otherLang && otherLangLevel) {
-                    formData['other-language'] = otherLang;
-                    formData['other-language-level'] = otherLangLevel;
-                } else if (otherLang) {
-                    formData['other-language'] = otherLang;
-                } else if (otherLangLevel) {
-                    formData['other-language-level'] = otherLangLevel;
+                // If user checked that they have another language, validate the fields
+                if (hasOtherLanguage) {
+                    if (!otherLang) {
+                        isValid = false;
+                        if (showErrors) {
+                            errorMessage = 'Please enter the other language you speak.';
+                        }
+                    } else if (!otherLangLevel) {
+                        isValid = false;
+                        if (showErrors) {
+                            errorMessage = 'Please select your proficiency level for the language you entered.';
+                        }
+                    }
+                    
+                    // Save the language data if both are provided
+                    if (otherLang && otherLangLevel) {
+                        formData['other-language'] = otherLang;
+                        formData['other-language-level'] = otherLangLevel;
+                    }
+                } else {
+                    // If checkbox is not checked, clear any language data
+                    delete formData['other-language'];
+                    delete formData['other-language-level'];
                 }
             }
             

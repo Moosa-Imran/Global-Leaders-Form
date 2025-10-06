@@ -63,8 +63,9 @@ function generateEmailTemplate(formData, paymentInfo) {
         furtherEducation: formData['high-school'] === 'no' ? 'N/A (No High School)' : (formData['further-education'] === 'yes' ? 'Yes' : 'No'),
         educationLevel: formData['education-level'] || (formData['high-school'] === 'no' ? 'No High School Diploma' : 'Not Specified'),
         englishLevel: formData['english-level'] || 'Not Specified',
-        otherLanguage: formData['other-language'] || 'None',
-        otherLanguageLevel: formData['other-language-level'] || 'N/A',
+        hasOtherLanguage: formData['has-other-language'] === 'yes' ? 'Yes' : 'No',
+        otherLanguage: formData['has-other-language'] === 'yes' ? (formData['other-language'] || 'Not Specified') : 'N/A',
+        otherLanguageLevel: formData['has-other-language'] === 'yes' ? (formData['other-language-level'] || 'Not Specified') : 'N/A',
         employmentStatus: getEmploymentStatusText(formData['employment-status']),
         yearsWorked: formData['years-worked'] || 'Not Specified',
         jobTitle: formData['job-title'] || 'Not Specified',
@@ -196,6 +197,7 @@ function generateEmailTemplate(formData, paymentInfo) {
                 <div class="section-title">🗣️ Language Skills</div>
                 <table class="data-table">
                     <tr><th>English Proficiency</th><td>${applicantInfo.englishLevel}</td></tr>
+                    <tr><th>Speaks Other Language</th><td>${applicantInfo.hasOtherLanguage}</td></tr>
                     <tr><th>Other Language</th><td>${applicantInfo.otherLanguage}</td></tr>
                     <tr><th>Other Language Level</th><td>${applicantInfo.otherLanguageLevel}</td></tr>
                 </table>
