@@ -356,6 +356,35 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        /* Back Button Styles */
+        .back-btn {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-height: 52px;
+        }
+        
+        .back-btn:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+        }
+        
+        .back-btn:active {
+            transform: translateY(0);
+        }
         
         /* Mobile responsive button styles */
         @media (max-width: 768px) {
@@ -369,12 +398,31 @@
             .modern-btn:hover {
                 transform: none; /* Disable hover effects on mobile */
             }
+            
+            .back-btn {
+                padding: 14px 20px;
+                font-size: 13px;
+                border-radius: 10px;
+                min-height: 48px;
+            }
+            
+            .back-btn:hover {
+                transform: none; /* Disable hover effects on mobile */
+            }
         }
         
         @media (max-width: 480px) {
             .modern-btn {
                 padding: 12px 24px;
                 font-size: 14px;
+                border-radius: 8px;
+                min-height: 44px;
+                letter-spacing: 0.5px;
+            }
+            
+            .back-btn {
+                padding: 12px 16px;
+                font-size: 12px;
                 border-radius: 8px;
                 min-height: 44px;
                 letter-spacing: 0.5px;
@@ -803,6 +851,21 @@
                 font-size: 0.875rem !important;
             }
             
+            .back-btn {
+                padding: 12px 16px !important;
+                font-size: 0.8rem !important;
+            }
+            
+            /* Navigation button layout on mobile */
+            .flex.justify-between {
+                gap: 0.5rem !important;
+            }
+            
+            .modern-btn, .back-btn {
+                min-width: 100px !important;
+                flex-shrink: 0 !important;
+            }
+            
             /* Typography adjustments */
             h3 {
                 font-size: 1.125rem !important;
@@ -859,6 +922,12 @@
             .modern-btn {
                 padding: 10px 20px !important;
                 font-size: 0.875rem !important;
+            }
+            
+            .back-btn {
+                padding: 10px 12px !important;
+                font-size: 0.75rem !important;
+                min-width: 80px !important;
             }
             
             h3 {
@@ -1010,14 +1079,22 @@
                     <i class="fa-solid fa-exclamation-triangle text-red-500 text-lg"></i>
                     <span class="text-red-700 font-medium">Please make a selection or fill in the required field.</span>
                 </div>
-                <div class="flex justify-end">
+                <div class="flex justify-between gap-4">
+                    <!-- Back button - shown from step 2 onwards -->
+                    <button type="button" id="back-button" onclick="previousStep()"
+                            class="back-btn w-32 hidden">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>BACK
+                    </button>
+                    
+                    <div class="flex-1"></div>
+                    
                     <!-- Only NEXT or SUBMIT button is visible at a time -->
                     <button type="button" id="next-button" onclick="nextStep()"
-                            class="modern-btn w-full">
+                            class="modern-btn w-32">
                         NEXT
                     </button>
                     <button type="submit" id="submit-button" onclick="submitForm()"
-                            class="modern-btn w-full hidden">
+                            class="modern-btn w-32 hidden">
                         SUBMIT
                     </button>
                 </div>
@@ -1043,7 +1120,7 @@
                     <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
                         <div class="flex items-center justify-between">
                             <span class="text-lg font-semibold text-blue-800">Processing Fee</span>
-                            <span class="text-2xl font-bold text-blue-900">$0.50</span>
+                            <span class="text-2xl font-bold text-blue-900">$50.00</span>
                         </div>
                         <p class="text-sm text-blue-600 mt-2">One-time visa application processing fee</p>
                     </div>
@@ -1065,7 +1142,7 @@
                             class="modern-btn w-full"
                             disabled
                         >
-                            <span id="payment-button-text">Process Payment ($0.50)</span>
+                            <span id="payment-button-text">Process Payment ($50.00)</span>
                         </button>
 
                         <!-- Display payment result message -->
@@ -1108,6 +1185,7 @@
         const progressDots = document.getElementById('progress-dots');
         const nextButton = document.getElementById('next-button');
         const submitButton = document.getElementById('submit-button');
+        const backButton = document.getElementById('back-button');
         const errorMessage = document.getElementById('error-message');
         const successModal = document.getElementById('success-modal');
         const leftTitle = document.getElementById('left-title');
@@ -1632,6 +1710,7 @@
             // 4. Update Buttons
             nextButton.classList.toggle('hidden', currentStep === totalSteps);
             submitButton.classList.toggle('hidden', currentStep !== totalSteps);
+            backButton.classList.toggle('hidden', currentStep === 1); // Hide back button on first step
             
             // 5. Restore saved form data for the current step (if available)
             stepData.fields.forEach(fieldName => {
@@ -2239,6 +2318,16 @@
         }
         
         /**
+         * Moves to the previous step.
+         */
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                renderStep();
+            }
+        }
+        
+        /**
          * Final submission handler.
          */
         function submitForm() {
@@ -2399,7 +2488,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        amount: 50, // $0.50 in cents
+                        amount: 5000, // $50.00 in cents
                         essentialData: essentialData // Send only essential data for metadata
                     })
                 });
@@ -2478,7 +2567,7 @@
                 
                 // Reset button
                 submitButton.disabled = false;
-                buttonText.textContent = 'Process Payment ($0.50)';
+                buttonText.textContent = 'Process Payment ($50.00)';
                 
                 console.log('❌ Payment failed:', error.message);
             } else if (paymentIntent && paymentIntent.status === 'succeeded') {
@@ -2535,7 +2624,7 @@
                 
                 // Reset button
                 submitButton.disabled = false;
-                buttonText.textContent = 'Process Payment ($0.50)';
+                buttonText.textContent = 'Process Payment ($50.00)';
                 
                 console.log('❌ Payment not successful. Status:', paymentIntent?.status);
             }

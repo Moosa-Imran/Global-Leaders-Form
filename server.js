@@ -432,7 +432,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/create-payment-intent', express.json(), async (req, res) => {
     try {
         // Get amount and essential data from request body
-        const { amount = 50, essentialData } = req.body; // amount in cents
+        const { amount = 5000, essentialData } = req.body; // amount in cents (default $50.00)
         
         console.log(`Creating PaymentIntent for $${amount / 100} - Visa Application Processing Fee`);
         if (essentialData) {
